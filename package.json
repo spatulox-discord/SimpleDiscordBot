@@ -1,6 +1,6 @@
 {
   "name": "@spatulox/simplediscordbot",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": "Spatulox",
   "description": "Simple discord bot framework to set up a bot under 30 secondes",
   "exports": {
