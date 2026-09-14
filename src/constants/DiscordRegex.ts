@@ -6,7 +6,7 @@ export class DiscordRegex {
     static readonly SPACE = "\u200B";
 
     // URLs basiques
-    static readonly URL_REGEX = /(https?:\/\/[^s]+)/;
+    static readonly URL_REGEX = /(https?:\/\/[^\s<>]+)/i;
 
     /* DISCORD REGEX */
     static readonly USER_REGEX = /<@\d{18}>/;
