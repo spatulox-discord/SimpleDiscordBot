@@ -1,4 +1,4 @@
-Rédige une page de wiki au format suivant :
+Rédige une page de wiki en anglais au format suivant :
 
 - Utilise le langage Markdown.
 - Commence par un en‑tête `## [NomDeLaClasse / NomDuModule]`.
