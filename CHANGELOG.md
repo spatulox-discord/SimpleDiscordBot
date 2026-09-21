@@ -1,6 +1,10 @@
 # Changelog
 Date format : dd/mm/yyyy
 
+### 21/09/2026 - 3.1.1
+- Add :
+    - `ComponentManager.chart(container, chart, separator?)` : adds one chart or an array of charts to a container, like `field()` / `mediaGallery()` / `selectMenu()` do, instead of calling `container.addTextDisplayComponents()` by hand. No separator by default
+
 ### 21/09/2026 - 3.1.0
 - Add :
   - `ChartManager` : text based charts for Components V2, since Discord has no chart component. `progressBar()` / `progressBars()` draw unicode gauges (`CPU : ███░░░░░░░ 32.7 %`), `sparkline()` / `sparklines()` draw one line curves (`▁▂▃▅▇█▆▄▃▂▁`). Each method returns a `TextDisplayBuilder` to drop into a `ContainerBuilder`, and the grouped forms render every row in a single one so a dashboard costs 1 component instead of N against the 40 components budget of a message

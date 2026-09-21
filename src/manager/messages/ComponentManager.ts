@@ -199,6 +199,30 @@ export class ComponentManager {
     }
 
     /**
+     * Add chart(s) built by the ChartManager, so a dashboard reads like the other helpers :
+     * `ComponentManager.chart(container, ChartManager.progressBars([...]))` instead of
+     * `container.addTextDisplayComponents(...)`.
+     * No separator by default : stacked charts are meant to be read as one block
+     */
+    static chart(container: ContainerBuilder, chart: TextDisplayBuilder[], separator?: SeparatorSpacingSize | false): ContainerBuilder
+    static chart(container: ContainerBuilder, chart: TextDisplayBuilder, separator?: SeparatorSpacingSize | false): ContainerBuilder
+    static chart(
+            container: ContainerBuilder,
+            chart: TextDisplayBuilder | TextDisplayBuilder[],
+            separator: SeparatorSpacingSize | false = false
+    ): ContainerBuilder {
+        const charts = Array.isArray(chart) ? chart : [chart];
+        charts.forEach(c => {
+            container.addTextDisplayComponents(c);
+            if(separator !== false){
+                container.addSeparatorComponents(this.separator(separator));
+            }
+        });
+
+        return container;
+    }
+
+    /**
      * Add a media gallery (links)
      */
     static mediaGallery(container: ContainerBuilder, medias: {url: string, spoiler?: boolean}[]): ContainerBuilder {
