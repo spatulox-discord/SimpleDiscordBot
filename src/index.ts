@@ -17,6 +17,8 @@ export { UserManager } from './manager/direct/UserManager';
 export { ModalManager, ModalFieldType, ModalField } from "./manager/interactible/ModalManager";
 export { SelectMenuManager, SelectMenuList, SelectMenuCreateOption } from "./manager/interactible/SelectMenuManager";
 export { ComponentManager, ComponentManagerCreate, ComponentManagerField, ComponentManagerFileInput } from "./manager/messages/ComponentManager";
+export { ChartManager } from "./manager/messages/ChartManager";
+export type { ProgressBarOptions, ProgressBarRow, SparklineOptions, SparklinesOptions, SparklineRow } from "./manager/messages/ChartManager";
 export { ButtonManager, ButtonOptions } from "./manager/interactible/ButtonManager";
 
 // Utils

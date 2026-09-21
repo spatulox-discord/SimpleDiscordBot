@@ -1,6 +1,12 @@
 # Changelog
 Date format : dd/mm/yyyy
 
+### 21/09/2026 - 3.1.0
+- Add :
+  - `ChartManager` : text based charts for Components V2, since Discord has no chart component. `progressBar()` / `progressBars()` draw unicode gauges (`CPU : ███░░░░░░░ 32.7 %`), `sparkline()` / `sparklines()` draw one line curves (`▁▂▃▅▇█▆▄▃▂▁`). Each method returns a `TextDisplayBuilder` to drop into a `ContainerBuilder`, and the grouped forms render every row in a single one so a dashboard costs 1 component instead of N against the 40 components budget of a message
+    - `sparklines()` takes an opt-in `sharedScale` so stacked curves are scaled against the same bounds and stay comparable, instead of each one filling the whole height
+    - Values are clamped (`value > max`, negative values, `max = 0`), a constant serie renders as a straight line instead of dividing by zero, an empty serie or an empty row list renders `—` (`TextDisplayBuilder.setContent()` rejects an empty string), and non finite points are dropped instead of flattening the whole curve
+
 ### 28/04/2026 - 2.2.1
 - Changes :
   - Add dependency to @spatulox/utils

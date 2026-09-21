@@ -13,6 +13,7 @@
 > - Simple Log package
 > - Provides easy Managers to avoid repetitive code everywhere
 > - Simple yet powerful builders (Embeds, Modals, SelectMenus, Components, Buttons) that rely on discord.js for full compatibility
+> - Text based charts (progress bars, sparklines) for Components V2, since Discord has no chart component
 
 # Don't forget to check the [wiki](https://github.com/spatulox-discord/SimpleDiscordBot/wiki)
 

@@ -8,7 +8,8 @@ import {
 import {client} from "./client";
 import {Events} from "discord.js"
 import {randomActivityList} from "./randomActivityList";
-import {component_test} from "./ui/component_test";
+//import {component_test} from "./ui/component_test";
+import {chart_test} from "./ui/chart_test";
 dotenv.config();
 
 async function main() {
@@ -33,7 +34,8 @@ async function main() {
         if(interaction.isChatInputCommand()){
             console.log(interaction);
             //webhook_test(interaction)
-            component_test(interaction)
+            //component_test(interaction)
+            chart_test(interaction)
         }
     })
 
