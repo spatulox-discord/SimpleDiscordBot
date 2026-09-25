@@ -1,6 +1,9 @@
 # Changelog
 Date format : dd/mm/yyyy
 
+### 25/09/2026 - 3.2.0
+- Bump discord-interaction-manager (add a web interface)
+
 ### 21/09/2026 - 3.1.1
 - Add :
     - `ComponentManager.chart(container, chart, separator?)` : adds one chart or an array of charts to a container, like `field()` / `mediaGallery()` / `selectMenu()` do, instead of calling `container.addTextDisplayComponents()` by hand. No separator by default
