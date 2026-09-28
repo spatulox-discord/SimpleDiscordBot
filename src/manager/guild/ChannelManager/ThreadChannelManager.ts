@@ -1,6 +1,8 @@
 import {
     Message, MessageCreateOptions,
+    NewsChannel,
     StartThreadOptions,
+    TextChannel,
     ThreadChannel
 } from "discord.js";
 import {GuildChannelManager} from "./GuildChannelManager";
@@ -28,9 +30,9 @@ export class ThreadChannelManager {
         parentId: string,
         options: StartThreadOptions
     ): Promise<ThreadChannel> {
-        const channel = await GuildTextChannelManager.find(parentId);
-        if (!channel || !channel.isTextBased()) {
-            throw new Error('Parent must be a text-based channel');
+        const channel = await GuildChannelManager.find(parentId);
+        if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) {
+            throw new Error('Parent must be a text or announcement channel');
         }
 
         const thread = await channel.threads.create(options);
