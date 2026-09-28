@@ -103,9 +103,9 @@ export class BotMessage {
     static success(channel: TextChannel | DMChannel | ThreadChannel | User | GuildMember, message: string): Promise<Message | null> {
         const embed = EmbedManager.success(message);
         if(channel instanceof User || channel instanceof GuildMember) {
-            return this.sendDM(channel, message, embed)
+            return this.sendDM(channel, embed)
         }
-        return this.send(channel, message, embed);
+        return this.send(channel, embed);
     }
 
     /**
@@ -114,8 +114,8 @@ export class BotMessage {
     static error(channel: TextChannel | DMChannel | ThreadChannel | User | GuildMember, message: string): Promise<Message | null> {
         const embed = EmbedManager.error(message);
         if(channel instanceof User || channel instanceof GuildMember) {
-            return this.sendDM(channel, message, embed)
+            return this.sendDM(channel, embed)
         }
-        return this.send(channel, message, embed);
+        return this.send(channel, embed);
     }
 }
