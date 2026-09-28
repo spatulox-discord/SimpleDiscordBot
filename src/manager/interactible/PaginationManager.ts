@@ -95,10 +95,6 @@ export class PaginationManager {
                     case "last":
                         currentPage = pages.length - 1;
                         break;
-                    case "stop":
-                        await i.update({components: []});
-                        collector.stop("user");
-                        return;
                 }
 
                 await i.update(payload());
@@ -107,8 +103,7 @@ export class PaginationManager {
             }
         });
 
-        collector.on('end', async (_collected, reason) => {
-            if (reason === "user") return; // Stop button already removed the components
+        collector.on('end', async () => {
             await interaction.editReply({components: [this.row(prefix, currentPage, pages.length, true)]})
                 .catch(error => Log.warn(`PaginationManager: failed to disable the buttons: ${error}`));
         });
@@ -123,7 +118,8 @@ export class PaginationManager {
         return new ActionRowBuilder<ButtonBuilder>().addComponents(
             ButtonManager.secondary({customId: `${prefix}first`, emoji: "⏪", disabled: disabled || isFirst}),
             ButtonManager.secondary({customId: `${prefix}prev`, emoji: "⬅️", disabled: disabled || isFirst}),
-            ButtonManager.secondary({customId: `${prefix}stop`, emoji: "⏹️", disabled}),
+            // Page indicator only : always disabled, it can't be clicked
+            ButtonManager.secondary({customId: `${prefix}page`, label: `${currentPage + 1}/${pageCount}`, disabled: true}),
             ButtonManager.secondary({customId: `${prefix}next`, emoji: "➡️", disabled: disabled || isLast}),
             ButtonManager.secondary({customId: `${prefix}last`, emoji: "⏩", disabled: disabled || isLast}),
         );
