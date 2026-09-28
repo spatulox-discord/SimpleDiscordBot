@@ -16,6 +16,8 @@ export enum ModalFieldType {
 
 interface BaseModalField {
     label: string;
+    /** Custom id of the input, default `${modalCustomId}_${label}` (add()) or `${modalCustomId}_input` (simple()) */
+    customId?: string;
     value?: string
     required?: boolean;
 }
@@ -103,7 +105,7 @@ export class ModalManager {
         const modal = this.create(modalTitle ?? Bot.config?.botName ?? "Bot", customId);
         const opt: InternalModalField = {
             ...field,
-            customId: `${customId}_input`,
+            customId: field.customId ?? `${customId}_input`,
             placeholder: ('placeholder' in field && field.placeholder)
                 ? field.placeholder
                 : `Enter ${field.label.toLowerCase()}`,
@@ -198,7 +200,7 @@ export class ModalManager {
 
         const opt = {
             ...field,
-            customId:`${modal.data.custom_id}_${field.label}`
+            customId: field.customId ?? `${modal.data.custom_id}_${field.label}`
         }
 
         modal.addLabelComponents(this._createField(opt))
