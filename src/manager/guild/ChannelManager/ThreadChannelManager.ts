@@ -38,8 +38,7 @@ export class ThreadChannelManager {
     }
 
     static async createFromMessage(message: Message, options: StartThreadOptions): Promise<ThreadChannel> {
-        const channel = await GuildChannelManager.find(message.id);
-        if (!channel) throw new Error('Message channel not found');
+        if (!message.inGuild()) throw new Error('Cannot start a thread from a message outside of a guild');
 
         return await message.startThread(options)
     }
