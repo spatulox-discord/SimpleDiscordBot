@@ -6,12 +6,12 @@ import {Log} from "@spatulox/utils";
 export class GuildVoiceChannelManager extends GuildChannelManager {
     static async findInGuild(guildId: string, channelId: string): Promise<VoiceChannel | null> {
         const channel = await super.findInGuild(guildId, channelId);
-        return channel?.isVoiceBased() ? channel as VoiceChannel : null;
+        return channel instanceof VoiceChannel ? channel : null;
     }
 
     static async find(channelId: string): Promise<VoiceChannel | null> {
         const channel = await super.find(channelId);
-        return channel?.isVoiceBased() ? channel as VoiceChannel : null;
+        return channel instanceof VoiceChannel ? channel : null;
     }
 
     static findAll(guildId: string): VoiceChannel[] {

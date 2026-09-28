@@ -1,12 +1,24 @@
 import {
     User,
     EmojiResolvable,
+    Message,
+    parseEmoji,
 } from 'discord.js';
 import {Log} from "@spatulox/utils";
 import { Bot } from '../../core/Bot';
-import {GuildTextChannelManager} from "../guild/ChannelManager/GuildTextChannelManager";
 
 export class ReactionManager {
+
+    /**
+     * Any text based channel : guild channels, threads and DMs
+     */
+    private static async fetchMessage(channelId: string, messageId: string): Promise<Message> {
+        const channel = Bot.client.channels.cache.get(channelId) ?? await Bot.client.channels.fetch(channelId);
+        if (!channel?.isTextBased()) {
+            throw new Error(`Channel ${channelId} not found or not text based`);
+        }
+        return await channel.messages.fetch(messageId);
+    }
 
     /**
      * Add a reaction to a message
@@ -17,16 +29,7 @@ export class ReactionManager {
         emoji: string | EmojiResolvable,
     ): Promise<void> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
-            if (!channel) {
-                throw new Error(`Channel ${channelId} not found`);
-            }
-
-            if (!channel.isTextBased()) {
-                throw new Error(`Channel ${channelId} is not text based`);
-            }
-
-            const message = await channel.messages.fetch(messageId);
+            const message = await this.fetchMessage(channelId, messageId);
             await message.react(emoji);
 
             Log.info(`Added reaction ${emoji} to message ${messageId}`);
@@ -46,13 +49,9 @@ export class ReactionManager {
         userId: string
     ): Promise<void> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
-            if (!channel) {
-                throw new Error(`Channel ${channelId} not found`);
-            }
-
-            const message = await channel.messages.fetch(messageId);
-            const reaction = message.reactions.resolve(emoji);
+            const message = await this.fetchMessage(channelId, messageId);
+            // Reactions are keyed by the emoji id for custom emojis ("<:name:id>"), by the emoji itself otherwise
+            const reaction = message.reactions.resolve(parseEmoji(emoji)?.id ?? emoji);
 
             if (!reaction) {
                 throw new Error(`Reaction ${emoji} not found on message ${messageId}`);
@@ -73,12 +72,7 @@ export class ReactionManager {
      */
     static async getAll(channelId: string, messageId: string): Promise<Reaction[]> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
-            if (!channel) {
-                throw new Error(`Channel ${channelId} not found`);
-            }
-
-            const message = await channel.messages.fetch(messageId);
+            const message = await this.fetchMessage(channelId, messageId);
             const reactions = message.reactions.cache;
 
             const reactionList: Reaction[] = [];
@@ -104,12 +98,7 @@ export class ReactionManager {
      */
     static async clear(channelId: string, messageId: string): Promise<void> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
-            if (!channel) {
-                throw new Error(`Channel ${channelId} not found`);
-            }
-
-            const message = await channel.messages.fetch(messageId);
+            const message = await this.fetchMessage(channelId, messageId);
             await message.reactions.removeAll();
 
             Log.info(`Cleared all reactions from message ${messageId}`);

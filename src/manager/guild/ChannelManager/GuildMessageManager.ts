@@ -1,17 +1,25 @@
-import {Message, MessageCreateOptions} from "discord.js";
-import {GuildTextChannelManager} from "./GuildTextChannelManager";
+import {GuildTextBasedChannel, Message, MessageCreateOptions} from "discord.js";
+import {GuildChannelManager} from "./GuildChannelManager";
 import {Log} from "@spatulox/utils";
 import {SendableComponent, SendableComponentBuilder} from "../../builder/SendableComponentBuilder";
 
 export class GuildMessageManager {
 
+    /**
+     * Any guild channel able to hold messages : text, announcement, thread, voice / stage text chat
+     */
+    private static async findTextBased(channelId: string): Promise<GuildTextBasedChannel | null> {
+        const channel = await GuildChannelManager.find(channelId);
+        return channel?.isTextBased() ? channel : null;
+    }
+
 
     /**
      * Overloads for send
      */
-    static async send(channelId: string, content: string): Promise<Message>;
-    static async send(channelId: string, component: SendableComponent | SendableComponent[]): Promise<Message>;
-    static async send(channelId: string, options: MessageCreateOptions): Promise<Message>;
+    static async send(channelId: string, content: string): Promise<Message | null>;
+    static async send(channelId: string, component: SendableComponent | SendableComponent[]): Promise<Message | null>;
+    static async send(channelId: string, options: MessageCreateOptions): Promise<Message | null>;
 
     /**
      * Impl
@@ -21,7 +29,7 @@ export class GuildMessageManager {
         content_or_component_or_options: string | SendableComponent | SendableComponent[] | MessageCreateOptions
     ): Promise<Message | null> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
+            const channel = await this.findTextBased(channelId);
 
             if(!channel){
                 Log.error(`Channel ${channelId} not found in guild`);
@@ -51,7 +59,7 @@ export class GuildMessageManager {
      */
     static async delete(channelId: string, messageId: string): Promise<boolean> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
+            const channel = await this.findTextBased(channelId);
             if (!channel) {
                 Log.error(`Channel ${channelId} not found`);
                 return false;
@@ -73,7 +81,7 @@ export class GuildMessageManager {
      */
     static async fetch(channelId: string, limit: number = 10): Promise<Message[]> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
+            const channel = await this.findTextBased(channelId);
             if (!channel) {
                 Log.error(`Channel ${channelId} not found`);
                 return [];
@@ -93,7 +101,7 @@ export class GuildMessageManager {
      */
     static async fetchOne(channelId: string, messageId: string): Promise<Message | null> {
         try {
-            const channel = await GuildTextChannelManager.find(channelId);
+            const channel = await this.findTextBased(channelId);
             if (!channel) {
                 Log.error(`Channel ${channelId} not found`);
                 return null;

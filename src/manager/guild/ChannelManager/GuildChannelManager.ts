@@ -107,7 +107,7 @@ export class GuildChannelManager {
             return true
         } catch (error) {
             Log.error(`Failed to delete channel ${channelId}: ${error}`);
-            throw error;
+            return false;
         }
     }
 }

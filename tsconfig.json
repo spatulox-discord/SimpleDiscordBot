@@ -4,8 +4,6 @@
     "module": "nodenext",
     // "types": ["node"], // For typescript ^6.0.0
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
 
@@ -15,8 +13,8 @@
     "stripInternal": true,
     "declarationMap": true,
 
-    /*Only use the es2021/dom lib*/ /*need for "replaceAll" for example*/
-    "lib": ["es2022", "dom"],
+    /*need for "replaceAll" for example*/
+    "lib": ["es2022"],
 
     /*JSON*/
     "moduleResolution": "nodenext",

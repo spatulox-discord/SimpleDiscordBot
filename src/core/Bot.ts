@@ -10,19 +10,11 @@ import {BotInteraction} from "./BotInteraction";
 import {SimpleColor} from "../constants/SimpleColor";
 import {SimpleDiscordBotInfo} from "../SimpleDiscordBotInfo";
 
-type CriticConfig = {
-    dev: boolean;
-    token: string;
-};
-
 export type BotConfig = {
     defaultSimpleColor?: number | SimpleColor;
     botName?: string
     log?: ConfigLog
 }
-
-export type InternalBotConfig = {
-} & BotConfig;
 
 export type RandomBotActivity = {type: ActivityType, message: string}[]
 
@@ -34,55 +26,63 @@ export class Bot {
     public static readonly interaction = BotInteraction
 
     // Instance properties
-    public static _client: Client;
-    private static criticConfig: CriticConfig;
-    private static _config: InternalBotConfig;
+    private static _client: Client;
+    private static token: string;
+    private static _config: BotConfig;
+    private static randomActivityInterval: NodeJS.Timeout | null = null;
 
-    get config(): InternalBotConfig { return Bot._config; }
+    get config(): BotConfig { return Bot._config; }
     get client(): Client { return Bot._client; }
 
     static get client(): Client { return Bot._client; }
-    static get config(): InternalBotConfig { return Bot._config; }
+    static get config(): BotConfig { return Bot._config; }
+
+    /**
+     * Resolves once the login is done (true) or has definitively failed (false)
+     */
+    public readonly started: Promise<boolean>;
 
     constructor(client: Client, config: BotConfig = {}) {
 
         Log.info('----------------------------------------------------');
         Log.info("Starting Bot")
 
-        Bot.criticConfig = { dev: BotEnv.dev, token: BotEnv.token };
+        Bot.token = BotEnv.token;
         Bot._config = config
         Bot._client = client;
 
-        (async() => {
+        // Registered before login() so the event can't be missed, and only once even if login() is called again
+        Bot._client.once(Events.ClientReady, async () => {
+            if (Bot._client.user) {
+                await Bot.log.initDiscordLogging()
+                Log.info(`Connected on ${Bot._client.guilds.cache.size} servers as ${Bot._client.user.tag}`);
+                Bot.log.info(EmbedManager.description("Bot Started"))
+            }
+        });
+
+        this.started = (async() => {
             Log.info(`Using discord.js version: ${version}`);
             Log.info(`Using simplediscordbot version: ${SimpleDiscordBotInfo.version}`);
             Log.info('Trying to connect to Discord Servers')
 
             await InternetChecker.checkConnection(3)
 
-            await this.login()
-
-        })()
+            return await this.login()
+        })().catch(error => {
+            Log.error(`Failed to start the bot: ${error}`);
+            return false;
+        });
     }
 
     public async login(maxTries: number = 3): Promise<boolean> {
-        let success = false;
+        if (Bot._client.isReady()) return true;
+
         let tries = 0;
 
-        while (!success && tries < maxTries) {
+        while (tries < maxTries) {
             try {
-                await Bot._client.login(Bot.criticConfig.token);
-                success = true;
-
-                Bot._client.on(Events.ClientReady, async () => {
-                    if (Bot._client.user) {
-                        await Bot.log.initDiscordLogging()
-                        Log.info(`Connected on ${Bot._client.guilds.cache.size} servers as ${Bot._client.user.tag}`);
-                        //Bot._client.guilds.cache.forEach(g => console.log(` - ${g.name}`));
-                        Bot.log.info(EmbedManager.description("Bot Started"))
-                    }
-                });
-
+                await Bot._client.login(Bot.token);
+                return true;
             } catch (error) {
                 Log.error(`Connection error : ${error}. Trying again...`);
                 tries++;
@@ -92,12 +92,8 @@ export class Bot {
             }
         }
 
-        if (!success) {
-            Log.error('Impossible to connect the bot after 3 attempts');
-            return false;
-        }
-
-        return true;
+        Log.error(`Impossible to connect the bot after ${maxTries} attempts`);
+        return false;
     }
 
     static setActivity(message: string, type: ActivityType) {
@@ -113,6 +109,9 @@ export class Bot {
             return
         }
 
+        // Calling it again replaces the previous rotation instead of stacking a second interval
+        Bot.stopRandomActivity();
+
         const pickRandom = () => {
             const random = randomActivity[Math.floor(Math.random() * randomActivity.length)]!;
             Bot.setActivity(random.message, random.type);
@@ -126,11 +125,19 @@ export class Bot {
         }
 
         pickRandom();
-        setInterval(async () => {
-            pickRandom();
-        }, intervalMs);
-        Log.info(`Random activity started (every ${Math.round(intervalMs / 60000)}min)`);
+        Bot.randomActivityInterval = setInterval(pickRandom, intervalMs);
+        Log.info(`Random activity started (every ${intervalMs >= 60000 ? `${Math.round(intervalMs / 60000)}min` : `${Math.round(intervalMs / 1000)}s`})`);
         return
+    }
+
+    /**
+     * Stop the rotation started by setRandomActivity(), the current activity is kept
+     */
+    static stopRandomActivity() {
+        if (Bot.randomActivityInterval) {
+            clearInterval(Bot.randomActivityInterval);
+            Bot.randomActivityInterval = null;
+        }
     }
 
 }

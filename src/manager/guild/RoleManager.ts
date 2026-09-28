@@ -1,5 +1,5 @@
 // src/guild/RoleManager.ts
-import { GuildMember, Role, Snowflake } from 'discord.js';
+import { Collection, GuildMember, Role, Snowflake } from 'discord.js';
 import {Log} from "@spatulox/utils";
 
 export class RoleManager {
@@ -32,15 +32,7 @@ export class RoleManager {
      */
     static async remove(member: GuildMember, roleIdOrName: Snowflake | string): Promise<boolean> {
         try {
-            let role: Role | undefined;
-
-            if (typeof roleIdOrName === 'string' && roleIdOrName.length === 18) {
-                role = member.roles.cache.get(roleIdOrName);
-            } else {
-                role = member.roles.cache.find(r =>
-                    r.id === roleIdOrName || r.name.toLowerCase() === roleIdOrName.toString().toLowerCase()
-                );
-            }
+            const role = this.resolve(member.roles.cache, roleIdOrName);
 
             if (!role) {
                 Log.warn(`Role ${roleIdOrName} not found for ${member.displayName}`);
@@ -60,8 +52,8 @@ export class RoleManager {
      * Toggle role (add/remove)
      */
     static async toggle(member: GuildMember, roleIdOrName: Snowflake | string): Promise<'added' | 'removed'> {
-        const role = member.roles.cache.get(roleIdOrName as Snowflake) ||
-            member.roles.cache.find(r => r.name.toLowerCase() === roleIdOrName.toString().toLowerCase());
+        // Search in the guild roles : the member doesn't own the role when it needs to be added
+        const role = this.resolve(member.guild.roles.cache, roleIdOrName);
 
         if (!role) {
             Log.warn(`Role ${roleIdOrName} not found`);
@@ -81,11 +73,15 @@ export class RoleManager {
      * Check if member has role
      */
     static hasRole(member: GuildMember, roleIdOrName: Snowflake | string): boolean {
-        if (typeof roleIdOrName === 'string' && roleIdOrName.length === 18) {
-            return member.roles.cache.has(roleIdOrName);
-        }
-        return member.roles.cache.some(r =>
-            r.id === roleIdOrName || r.name.toLowerCase() === roleIdOrName.toString().toLowerCase()
-        );
+        return !!this.resolve(member.roles.cache, roleIdOrName);
+    }
+
+    /**
+     * Search by id first, then by name (case insensitive). Snowflakes are 17 to 20 digits long,
+     * so the length of the string can't tell an id from a name
+     */
+    private static resolve(roles: Collection<Snowflake, Role>, roleIdOrName: Snowflake | string): Role | undefined {
+        return roles.get(roleIdOrName) ??
+            roles.find(r => r.name.toLowerCase() === roleIdOrName.toLowerCase());
     }
 }

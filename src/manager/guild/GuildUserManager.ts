@@ -1,7 +1,7 @@
 import {Bot} from "../../core/Bot";
 import {Log} from "@spatulox/utils";
 import {BasicUserManager} from "../direct/BasicUserManager"
-import {BanOptions, GuildMember} from "discord.js";
+import {BanOptions, GuildMember, RESTJSONErrorCodes} from "discord.js";
 import {setTimeout} from "timers/promises";
 import {EmbedManager} from "../messages/EmbedManager";
 import {GuildManager} from "./GuildManager";
@@ -23,12 +23,16 @@ export class GuildUserManager extends BasicUserManager {
                 await setTimeout(1500)
                 return true;
             } catch (error: any) {
-                console.error(`Attempt ${attempts + 1} failed when renaming ${member.displayName} into ${nickname.trim()}:`, error);
+                Log.error(`Attempt ${attempts + 1} failed when renaming ${member.displayName} into ${nickname.trim()}: ${error}`);
+                // Missing permissions / hierarchy : retrying won't change anything
+                if (error?.code === RESTJSONErrorCodes.MissingPermissions || error?.code === RESTJSONErrorCodes.MissingAccess) {
+                    break;
+                }
                 await setTimeout(1000)
             }
         }
 
-        Bot.log.info(EmbedManager.error(`Failed to rename ${member.displayName} to ${nickname.trim()} after ${maxAttempts} attempts.`))
+        Bot.log.error(EmbedManager.error(`Failed to rename ${member.displayName} to ${nickname.trim()}.`))
         return false;
     }
     /**
@@ -71,11 +75,11 @@ export class GuildUserManager extends BasicUserManager {
     /**
      * Check if a member is in voice
      */
-    static async isInVoice(memberId: string, guildId: string): Promise<boolean> {
+    static async isInVoice(guildId: string, memberId: string): Promise<boolean> {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             return member.voice.channelId !== null;
         } catch (error) {
@@ -91,12 +95,12 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setMute(true, reason);
             Log.info(`Server muted ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
         } catch (error) {
-            Log.error(`Failed to server mute ${memberId} in ${guildId}:, error`);
+            Log.error(`Failed to server mute ${memberId} in ${guildId}: ${error}`);
             throw error;
         }
     }
@@ -108,7 +112,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setMute(false, reason);
             Log.info(`Server unmuted ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -125,7 +129,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setDeaf(true, reason);
             Log.info(`Server deafened ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -142,7 +146,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setDeaf(false, reason);
             Log.info(`Server undeafened ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -159,12 +163,10 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
-            //const member = await guild.members.fetch(memberId);
-            const expires = Date.now() + duration
-
-            await member.timeout(expires, reason);
+            // discord.js expects a duration, it adds Date.now() itself
+            await member.timeout(duration, reason);
             Log.info(`Timed out ${memberId} for ${duration}ms in guild ${guildId}: ${reason || 'No reason'}`);
         } catch (error) {
             Log.error(`Failed to timeout ${memberId} in ${guildId}: ${error}`);
@@ -179,7 +181,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.timeout(null, reason);
             Log.info(`Untimed out ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -196,7 +198,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.kick(reason);
             Log.info(`Kicked ${memberId} from guild ${guildId}: ${reason || 'No reason'}`);

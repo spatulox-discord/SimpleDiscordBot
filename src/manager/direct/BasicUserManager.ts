@@ -89,7 +89,7 @@ export abstract class BasicUserManager {
                 );
             } else if (typeof content_or_component_or_options === 'string') { // content only
                 payload = SendableComponentBuilder.buildMessage(content_or_component_or_options);
-            } else if(SendableComponentBuilder.isSendableComponent(content_or_component_or_options)) { // component only
+            } else if(SendableComponentBuilder.isSendableComponent(content_or_component_or_options) || Array.isArray(content_or_component_or_options)) { // component(s) only
                 payload = SendableComponentBuilder.buildMessage(content_or_component_or_options);
             } else { // MessageCreationOptionOnly
                 payload = content_or_component_or_options as MessageCreateOptions;

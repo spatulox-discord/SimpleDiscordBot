@@ -46,9 +46,9 @@ export class GuildManager {
     /**
      * Search guild member by ID
      */
-    static async searchMember(memberId: string, guildId: string): Promise<GuildMember | null> {
+    static async searchMember(guildId: string, memberId: string): Promise<GuildMember | null> {
         try {
-            return await this.user.findInGuild(guildId, guildId);
+            return await this.user.findInGuild(guildId, memberId);
         } catch (error) {
             Log.error(`Failed to fetch member ${memberId} in guild ${guildId}: ${error}`);
             return null;
@@ -58,9 +58,9 @@ export class GuildManager {
     /**
      * Check if member is still in guild
      */
-    static async isMemberInGuild(memberId: string, guildId: string): Promise<boolean> {
+    static async isMemberInGuild(guildId: string, memberId: string): Promise<boolean> {
         try {
-            return await this.user.isInGuild(memberId, guildId);
+            return await this.user.isInGuild(guildId, memberId);
         } catch (error: any) {
             return error.code !== 10007; // Unknown Member
         }

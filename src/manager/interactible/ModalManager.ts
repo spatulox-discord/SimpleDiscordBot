@@ -16,6 +16,8 @@ export enum ModalFieldType {
 
 interface BaseModalField {
     label: string;
+    /** Custom id of the input, default `${modalCustomId}_${label}` (add()) or `${modalCustomId}_input` (simple()) */
+    customId?: string;
     value?: string
     required?: boolean;
 }
@@ -103,7 +105,7 @@ export class ModalManager {
         const modal = this.create(modalTitle ?? Bot.config?.botName ?? "Bot", customId);
         const opt: InternalModalField = {
             ...field,
-            customId: `${customId}_input`,
+            customId: field.customId ?? `${customId}_input`,
             placeholder: ('placeholder' in field && field.placeholder)
                 ? field.placeholder
                 : `Enter ${field.label.toLowerCase()}`,
@@ -130,7 +132,8 @@ export class ModalManager {
             label: title.label,
             placeholder: title.placeholder ?? `Enter ${title.label.toLowerCase()}`,
             type: ModalFieldType.SHORT,
-            required: title.required
+            required: title.required,
+            value: title.value
         }
 
         const descField: InternalModalField = {
@@ -138,7 +141,8 @@ export class ModalManager {
             label: description.label,
             placeholder: description.placeholder ?? `Enter ${description.label.toLowerCase()}`,
             type: ModalFieldType.LONG,
-            required: description.required
+            required: description.required,
+            value: description.value
         }
 
         modal.addLabelComponents(this._createField(titleField))
@@ -149,35 +153,42 @@ export class ModalManager {
 
     /**
      * Date modal preset
+     * @param suffix true (default) : the modal customId is `${customId}_date` and the input `${customId}_date_input`,
+     * false : the modal keeps `customId` and the input is `${customId}_input`. Same for number() (_number) and phone() (_phone_number)
      */
     static date(
         customId: string,
         modalTitle: string = "Select Date",
-        inputLabel: string = "Date"
+        inputLabel: string = "Date",
+        suffix: boolean = true
     ): ModalBuilder {
-        return this.simple(`${customId}_date`, modalTitle, {label:inputLabel, type: ModalFieldType.DATE});
+        return this.simple(suffix ? `${customId}_date` : customId, modalTitle, {label:inputLabel, type: ModalFieldType.DATE});
     }
 
     /**
      * Number modal preset
+     * @param suffix See date() : `${customId}_number` by default, `customId` when false
      */
     static number(
         customId: string,
         modalTitle: string = "Enter a Number",
-        inputLabel: string = "Number"
+        inputLabel: string = "Number",
+        suffix: boolean = true
     ): ModalBuilder {
-        return this.simple(`${customId}_number`, modalTitle, {label:inputLabel, type: ModalFieldType.NUMBER, placeholder: "Enter a number"});
+        return this.simple(suffix ? `${customId}_number` : customId, modalTitle, {label:inputLabel, type: ModalFieldType.NUMBER, placeholder: "Enter a number"});
     }
 
     /**
-     * Number modal preset
+     * Phone modal preset
+     * @param suffix See date() : `${customId}_phone_number` by default, `customId` when false
      */
     static phone(
         customId: string,
         modalTitle: string = "Enter a Phone number",
-        inputLabel: string = "Phone number"
+        inputLabel: string = "Phone number",
+        suffix: boolean = true
     ): ModalBuilder {
-        return this.simple(`${customId}_phone_number`, modalTitle, {label:inputLabel, type: ModalFieldType.PHONE, placeholder: "Enter a phone number"});
+        return this.simple(suffix ? `${customId}_phone_number` : customId, modalTitle, {label:inputLabel, type: ModalFieldType.PHONE, placeholder: "Enter a phone number"});
     }
 
     /**
@@ -196,7 +207,7 @@ export class ModalManager {
 
         const opt = {
             ...field,
-            customId:`${modal.data.custom_id}_${field.label}`
+            customId: field.customId ?? `${modal.data.custom_id}_${field.label}`
         }
 
         modal.addLabelComponents(this._createField(opt))
@@ -218,29 +229,34 @@ export class ModalManager {
     static parseDate(value: string): Date | null {
         if (/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(value)) { // 2020-12-20
             const [year, month, day] = value.split('-').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
         if (/^(0[1-9]|[12]\d|3[01])-(0[1-9]|1[0-2])-\d{4}$/.test(value)) { // 20-12-2020
             const [day, month, year] = value.split('-').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
 
         if (/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/.test(value)) { // 20/12/2020
             const [day, month, year] = value.split('/').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
         if (/^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/.test(value)) { // 2020/12/20
             const [year, month, day] = value.split('/').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
         return null;
+    }
+
+    /**
+     * new Date() silently rolls an impossible date over (31/02 becomes 02/03) : reject any date that doesn't round-trip
+     */
+    private static buildDate(year: number, month: number, day: number): Date | null {
+        const date = new Date(year, month - 1, day);
+        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+        return date;
     }
 }

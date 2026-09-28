@@ -1,9 +1,10 @@
-import pkg from '../package.json'
+// Named imports so the bundler only keeps these fields instead of the whole package.json
+import {name, version, author, description, license} from '../package.json'
 
 export const SimpleDiscordBotInfo = {
-    name: pkg.name,
-    version: pkg.version,
-    author: pkg.author,
-    description: pkg.description,
-    license: pkg.license
+    name,
+    version,
+    author,
+    description,
+    license
 }

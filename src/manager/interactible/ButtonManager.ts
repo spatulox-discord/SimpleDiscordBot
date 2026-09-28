@@ -16,10 +16,13 @@ export class ButtonManager {
     static create(options: ButtonOptions & { style: ButtonStyle }): ButtonBuilder {
         const btn = new ButtonBuilder()
             .setCustomId(options.customId)
-            .setLabel(options.label ?? "Button")
             .setStyle(options.style)
             .setDisabled(options.disabled ?? false);
 
+        // An emoji only button is valid : the default label is only needed when there is nothing to show
+        if (options.label || !options.emoji) {
+            btn.setLabel(options.label ?? "Button");
+        }
         if (options.emoji) {
             btn.setEmoji(options.emoji);
         }
@@ -90,18 +93,31 @@ export class ButtonManager {
         };
     }
 
+    /**
+     * Consecutive buttons are grouped by 5 in the same row (like row() does), action rows are kept as is
+     */
     private static createRowsToReturn(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): ActionRowBuilder<ButtonBuilder>[]{
+        const items: (ButtonBuilder | ActionRowBuilder<ButtonBuilder>)[] = Array.isArray(button) ? button : [button];
+        const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+        let pending: ButtonBuilder[] = [];
 
-        if (Array.isArray(button)) {
-            return button.map(btn =>
-                btn instanceof ActionRowBuilder
-                    ? btn
-                    : ButtonManager.row(btn)
-            );
+        const flush = () => {
+            for (let i = 0; i < pending.length; i += 5) {
+                rows.push(ButtonManager.row(pending.slice(i, i + 5)));
+            }
+            pending = [];
+        };
+
+        for (const item of items) {
+            if (item instanceof ActionRowBuilder) {
+                flush();
+                rows.push(item);
+            } else {
+                pending.push(item);
+            }
         }
+        flush();
 
-        return button instanceof ActionRowBuilder
-            ? [button]
-            : [ButtonManager.row(button)];
+        return rows;
     }
 }
