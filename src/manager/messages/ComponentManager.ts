@@ -12,7 +12,7 @@ import {
     ButtonBuilder,
     AttachmentBuilder,
     FileBuilder,
-    ActionRowBuilder, InteractionReplyOptions, InteractionEditReplyOptions,
+    ActionRowBuilder, InteractionReplyOptions, InteractionEditReplyOptions, InteractionUpdateOptions,
 } from "discord.js";
 import { Bot } from '../../core/Bot';
 import {SelectMenuList, SelectMenuManager} from "../interactible/SelectMenuManager";
@@ -364,5 +364,16 @@ export class ComponentManager {
         }
 
         return base;
+    }
+
+    /**
+     * Same as toInteractionEdit(), typed for interaction.update() (with the Components V2 flag) : buttons, select menus and modals opened from a message
+     */
+    static toInteractionUpdate(
+        container: ContainerBuilder,
+        file: AttachmentBuilder | AttachmentBuilder[] | null = null,
+        footer: boolean = true
+    ): InteractionUpdateOptions {
+        return this.toInteractionEdit(container, file, footer);
     }
 }

@@ -1,7 +1,7 @@
 import {
     ButtonBuilder,
     ButtonStyle,
-    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, InteractionEditReplyOptions, MessageFlags,
+    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, InteractionEditReplyOptions, MessageFlags, InteractionUpdateOptions,
 } from "discord.js";
 
 export interface ButtonOptions {
@@ -91,6 +91,13 @@ export class ButtonManager {
         return {
             components: this.createRowsToReturn(button)
         };
+    }
+
+    /**
+     * Same as toInteractionEdit(), typed for interaction.update() : buttons, select menus and modals opened from a message
+     */
+    static toInteractionUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionUpdateOptions {
+        return this.toInteractionEdit(button);
     }
 
     /**
