@@ -71,7 +71,7 @@ export class GuildUserManager extends BasicUserManager {
     /**
      * Check if a member is in voice
      */
-    static async isInVoice(memberId: string, guildId: string): Promise<boolean> {
+    static async isInVoice(guildId: string, memberId: string): Promise<boolean> {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
