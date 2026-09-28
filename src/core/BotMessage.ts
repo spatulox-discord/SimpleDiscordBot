@@ -32,7 +32,8 @@ export class BotMessage {
 
 
             if (typeof channel === "string") {
-                const fetchedChannel = Bot.client.channels.cache.get(channel);
+                const fetchedChannel = Bot.client.channels.cache.get(channel)
+                    ?? await Bot.client.channels.fetch(channel).catch(() => null);
                 if (!fetchedChannel?.isTextBased()) {
                     Log.warn(`Cannot send message : Invalid channel ID: ${channel}`);
                     return null;
