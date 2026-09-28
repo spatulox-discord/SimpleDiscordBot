@@ -20,6 +20,8 @@ export { ComponentManager, ComponentManagerCreate, ComponentManagerField, Compon
 export { ChartManager } from "./manager/messages/ChartManager";
 export type { ProgressBarOptions, ProgressBarRow, SparklineOptions, SparklinesOptions, SparklineRow } from "./manager/messages/ChartManager";
 export { ButtonManager, ButtonOptions } from "./manager/interactible/ButtonManager";
+export { PaginationManager } from "./manager/interactible/PaginationManager";
+export type { PaginationPage, PaginationOptions } from "./manager/interactible/PaginationManager";
 
 // Utils
 export { Time } from "@spatulox/utils"
