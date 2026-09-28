@@ -1,6 +1,43 @@
 # Changelog
 Date format : dd/mm/yyyy
 
+### Unreleased (contains breaking changes : next major)
+- Breaking :
+  - `GuildManager.searchMember()`, `GuildManager.isMemberInGuild()` and `GuildUserManager.isInVoice()` now take `(guildId, memberId)` like every other member method
+  - `ModalManager.date()` / `number()` / `phone()` keep the given customId for the modal (it was suffixed with `_date` / `_number` / `_phone_number`), the input is `${customId}_input`
+  - `ButtonManager.toMessage/toInteraction/toInteractionEdit([...buttons])` group the buttons by 5 per row instead of one row per button
+  - `GuildManager.channel.text.find()` / `voice.find()` only return a `TextChannel` / `VoiceChannel`
+  - `GuildChannelManager.delete()` returns `false` on failure instead of throwing
+  - `DISCORD_BOT_DEV=false` (or `0`, `no`, `off`, empty) no longer enables the dev mode
+  - `Bot._client` is private (use `Bot.client`), `Bot.log.config()` is removed (use `Bot.config.log`)
+- Add :
+  - `PaginationManager` is exported : `PaginationManager.send(interaction, pages, options)`
+  - `Bot.interaction.*` accept a plain string and arrays of components, `Bot.interaction.defer(interaction, ephemeral)`
+  - `Bot.message.send/sendDM`, `Bot.log.*` and `WebhookManager.send` accept arrays of components
+  - `ComponentManager.toInteraction(container, file, footer, ephemeral)`
+  - `ModalField.customId`, `InviteManager.isOld()` / `InviteManager.cleanup()`, `Bot.stopRandomActivity()`, `bot.started`
+  - `DiscordRegex.SNOWFLAKE` / `DiscordRegex.DISCORD_URL`, `SendableComponent` / `ConfigLog` types are exported
+  - Unit tests (`npm test`), run by `npm run build`
+- Fix :
+  - Components V2 : the flag was missing on interactions, arrays and `toInteractionEdit()`, content + container was rejected by Discord (the content now becomes a TextDisplay)
+  - `GuildUserManager.timeout()` passed a timestamp instead of a duration
+  - `RoleManager.toggle()` could never add a role, roles whose name is 18 characters long couldn't be found
+  - `WebhookManager` reused the first channel's webhook for every channel
+  - `ThreadChannelManager.createFromMessage()` always failed, `createFromChannel()` crashed on voice channels
+  - `GuildManager.searchMember()` / `isMemberInGuild()` passed wrong arguments
+  - `UserManager.send()` with an array of components
+  - `Bot.interaction.followUp()` returned false for commands and modals, `Bot.interaction.update()` failed after `defer()`
+  - `ComponentManager.create()` ignored description / separator without title, `toMessage()` & co stacked footers on the same container
+  - `SimpleColor.black` as `defaultSimpleColor`, crashes when using `EmbedManager` / `Bot.log` before the Bot is instantiated
+  - `Bot.message.success/error` printed the message twice, `Bot.message.send(channelId)` only looked in the cache
+  - `ModalManager.titleDescription()` ignored prefilled values, `parseDate()` accepted `31/02`
+  - `DiscordRegex` : 17 to 20 digits ids, invites, `isDiscordUrl()`, usernames with dots, every unicode emoji
+  - `ReactionManager.remove()` with custom emojis, DMs support
+  - `GuildUserManager.rename()` retried on permission errors, error logs of `mute()` and member lookups
+  - `Bot` startup (ClientReady registered after login, unhandled errors, double login), `setRandomActivity()` stacking intervals
+  - Package : ESM consumers got the CommonJS build, `@discordjs/builders` was used without being a dependency, internal files and the whole package.json were published
+- Removed : `InviteManager_old`, `FolderName`, `@types/node-schedule`, dead code
+
 ### 25/09/2026 - 3.2.0
 - Bump discord-interaction-manager (add a web interface)
 
