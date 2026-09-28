@@ -1,7 +1,7 @@
 import {Bot} from "../../core/Bot";
 import {Log} from "@spatulox/utils";
 import {BasicUserManager} from "../direct/BasicUserManager"
-import {BanOptions, GuildMember} from "discord.js";
+import {BanOptions, GuildMember, RESTJSONErrorCodes} from "discord.js";
 import {setTimeout} from "timers/promises";
 import {EmbedManager} from "../messages/EmbedManager";
 import {GuildManager} from "./GuildManager";
@@ -23,12 +23,16 @@ export class GuildUserManager extends BasicUserManager {
                 await setTimeout(1500)
                 return true;
             } catch (error: any) {
-                console.error(`Attempt ${attempts + 1} failed when renaming ${member.displayName} into ${nickname.trim()}:`, error);
+                Log.error(`Attempt ${attempts + 1} failed when renaming ${member.displayName} into ${nickname.trim()}: ${error}`);
+                // Missing permissions / hierarchy : retrying won't change anything
+                if (error?.code === RESTJSONErrorCodes.MissingPermissions || error?.code === RESTJSONErrorCodes.MissingAccess) {
+                    break;
+                }
                 await setTimeout(1000)
             }
         }
 
-        Bot.log.info(EmbedManager.error(`Failed to rename ${member.displayName} to ${nickname.trim()} after ${maxAttempts} attempts.`))
+        Bot.log.error(EmbedManager.error(`Failed to rename ${member.displayName} to ${nickname.trim()}.`))
         return false;
     }
     /**
