@@ -96,7 +96,7 @@ export class GuildUserManager extends BasicUserManager {
             await member.voice.setMute(true, reason);
             Log.info(`Server muted ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
         } catch (error) {
-            Log.error(`Failed to server mute ${memberId} in ${guildId}:, error`);
+            Log.error(`Failed to server mute ${memberId} in ${guildId}: ${error}`);
             throw error;
         }
     }
