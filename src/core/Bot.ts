@@ -10,19 +10,11 @@ import {BotInteraction} from "./BotInteraction";
 import {SimpleColor} from "../constants/SimpleColor";
 import {SimpleDiscordBotInfo} from "../SimpleDiscordBotInfo";
 
-type CriticConfig = {
-    dev: boolean;
-    token: string;
-};
-
 export type BotConfig = {
     defaultSimpleColor?: number | SimpleColor;
     botName?: string
     log?: ConfigLog
 }
-
-export type InternalBotConfig = {
-} & BotConfig;
 
 export type RandomBotActivity = {type: ActivityType, message: string}[]
 
@@ -34,22 +26,22 @@ export class Bot {
     public static readonly interaction = BotInteraction
 
     // Instance properties
-    public static _client: Client;
-    private static criticConfig: CriticConfig;
-    private static _config: InternalBotConfig;
+    private static _client: Client;
+    private static token: string;
+    private static _config: BotConfig;
 
-    get config(): InternalBotConfig { return Bot._config; }
+    get config(): BotConfig { return Bot._config; }
     get client(): Client { return Bot._client; }
 
     static get client(): Client { return Bot._client; }
-    static get config(): InternalBotConfig { return Bot._config; }
+    static get config(): BotConfig { return Bot._config; }
 
     constructor(client: Client, config: BotConfig = {}) {
 
         Log.info('----------------------------------------------------');
         Log.info("Starting Bot")
 
-        Bot.criticConfig = { dev: BotEnv.dev, token: BotEnv.token };
+        Bot.token = BotEnv.token;
         Bot._config = config
         Bot._client = client;
 
@@ -71,7 +63,7 @@ export class Bot {
 
         while (!success && tries < maxTries) {
             try {
-                await Bot._client.login(Bot.criticConfig.token);
+                await Bot._client.login(Bot.token);
                 success = true;
 
                 Bot._client.on(Events.ClientReady, async () => {
