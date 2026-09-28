@@ -9,9 +9,9 @@ export class GuildMessageManager {
     /**
      * Overloads for send
      */
-    static async send(channelId: string, content: string): Promise<Message>;
-    static async send(channelId: string, component: SendableComponent | SendableComponent[]): Promise<Message>;
-    static async send(channelId: string, options: MessageCreateOptions): Promise<Message>;
+    static async send(channelId: string, content: string): Promise<Message | null>;
+    static async send(channelId: string, component: SendableComponent | SendableComponent[]): Promise<Message | null>;
+    static async send(channelId: string, options: MessageCreateOptions): Promise<Message | null>;
 
     /**
      * Impl
