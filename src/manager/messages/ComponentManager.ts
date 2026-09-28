@@ -77,13 +77,13 @@ export class ComponentManager {
                     new TextDisplayBuilder().setContent(option.title!)
                 );
             }
+        }
 
-            if(option?.description) {
-                container.addTextDisplayComponents(new TextDisplayBuilder().setContent(option.description))
-            }
-            if(option?.separator) {
-                container.addSeparatorComponents(this.separator(option.separator));
-            }
+        if(option?.description) {
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(option.description))
+        }
+        if(option?.separator && (option.title || option.thumbnailUrl || option.description)) {
+            container.addSeparatorComponents(this.separator(option.separator));
         }
 
         return container;
