@@ -117,15 +117,19 @@ export class BotInteraction {
             typeof content === 'string' ? component as SendableComponent : content as SendableComponent
         );
 
-        // MessageComponent → update()
+        if (!interaction.isRepliable()) return false;
+
+        // Already acknowledged (defer() / deferUpdate() / reply()) → editReply()
+        if (interaction.deferred || interaction.replied) {
+            return await interaction.editReply(options);
+        }
+
+        // MessageComponent or modal opened from a message → update()
         if (interaction.isMessageComponent()) {
             return await interaction.update(options);
         }
-
-        // Slash commands → editReply()
-        if(!interaction.isCommand()) return false
-        if (interaction.deferred || interaction.replied) {
-            return await interaction.editReply(options);
+        if (interaction.isModalSubmit() && interaction.isFromMessage()) {
+            return await interaction.update(options);
         }
         return false
     }
