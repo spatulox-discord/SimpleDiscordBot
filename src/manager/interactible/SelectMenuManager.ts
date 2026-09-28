@@ -137,16 +137,7 @@ export class SelectMenuManager {
     /**
      * Quick option creator
      */
-    private static option(option: SelectMenuCreateOption): StringSelectMenuOptionBuilder;
-    private static option(options: SelectMenuCreateOption[]): StringSelectMenuOptionBuilder[];
-    private static option(option: SelectMenuCreateOption | SelectMenuCreateOption[]): StringSelectMenuOptionBuilder | StringSelectMenuOptionBuilder[] {
-        if (Array.isArray(option)) {
-            return option.map((opt: SelectMenuCreateOption) => this._createOption(opt));
-        }
-        return this._createOption(option)
-    }
-
-    private static _createOption(option: SelectMenuCreateOption): StringSelectMenuOptionBuilder{
+    private static option(option: SelectMenuCreateOption): StringSelectMenuOptionBuilder{
         const builder = new StringSelectMenuOptionBuilder()
             .setLabel(option.label)
             .setValue(option.value)
