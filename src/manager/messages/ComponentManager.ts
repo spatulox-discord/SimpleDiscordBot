@@ -284,12 +284,15 @@ export class ComponentManager {
 
 
 
+    /**
+     * Returns a copy with the footer, so calling toMessage() / toInteraction() twice on the same
+     * container doesn't stack footers
+     */
     private static footer(container: ContainerBuilder): ContainerBuilder {
-        container.addTextDisplayComponents(
+        return new ContainerBuilder(container.toJSON()).addTextDisplayComponents(
             new TextDisplayBuilder()
                 .setContent(`-# **${Bot.config?.botName || "Bot"} · <t:${Math.floor(Date.now() / 1000)}:d> <t:${Math.floor(Date.now() / 1000)}:t>**`)
         );
-        return container;
     }
 
     /**
@@ -300,7 +303,7 @@ export class ComponentManager {
      */
     static toMessage(container: ContainerBuilder, file: AttachmentBuilder | AttachmentBuilder[] | null = null, footer: boolean = true): MessageCreateOptions {
         if(footer){
-            this.footer(container);
+            container = this.footer(container);
         }
         if(file){
             return {
@@ -322,7 +325,7 @@ export class ComponentManager {
         ephemeral: boolean = false
     ): InteractionReplyOptions {
         if(footer){
-            this.footer(container);
+            container = this.footer(container);
         }
         const base: InteractionReplyOptions = {
             components: [container],
@@ -345,7 +348,7 @@ export class ComponentManager {
         footer: boolean = true
     ): InteractionEditReplyOptions {
         if(footer){
-            this.footer(container);
+            container = this.footer(container);
         }
         // The flag is required to turn a deferred reply (or a legacy message) into a Components V2 one
         const base: InteractionEditReplyOptions = {
