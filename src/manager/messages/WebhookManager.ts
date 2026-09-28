@@ -15,7 +15,8 @@ import {Bot} from "../../core/Bot";
 import {EmbedManager} from "./EmbedManager";
 
 export class WebhookManager {
-    private webhook: Webhook | null = null;
+    /** One webhook per channel id (the parent channel id for threads) */
+    private readonly webhooks = new Map<Snowflake, Webhook>();
 
     constructor(
         private readonly client: Client,
@@ -63,29 +64,32 @@ export class WebhookManager {
     }
 
     /**
-     * Get or create webhook (lazy initialization)
+     * Channel owning the webhook : the parent channel when targeting a thread
+     */
+    private getWebhookChannel(channel: TextChannel | ThreadChannel): BaseGuildTextChannel | ThreadOnlyChannel {
+        if (!(channel instanceof ThreadChannel)) return channel;
+
+        const parent = channel.parent;
+        if (!parent || !(parent instanceof BaseGuildTextChannel) && !(parent instanceof ThreadOnlyChannel)) {
+            throw new Error("Targeted channel parent is not a BaseGuildTextChannel or ThreadOnlyChannel");
+        }
+        return parent;
+    }
+
+    /**
+     * Get or create webhook (lazy initialization, cached per channel)
      * Create the webhook in the parent channel if it's in a thread
      */
-    private async getWebhook(channelId: Snowflake): Promise<Webhook> {
-        if (this.webhook) return this.webhook;
-
+    private async getWebhook(channel: TextChannel | ThreadChannel): Promise<Webhook> {
         try {
-            const textThreadChannel = await this.getChannel(channelId);
-            let textChannel: BaseGuildTextChannel | ThreadOnlyChannel;
+            const textChannel = this.getWebhookChannel(channel);
 
-            if (textThreadChannel instanceof ThreadChannel) {
-                const parent = textThreadChannel.parent;
-                if (!parent || !(parent instanceof BaseGuildTextChannel) && !(parent instanceof ThreadOnlyChannel)) {
-                    throw new Error("Targeted channel parent is not a BaseGuildTextChannel or ThreadOnlyChannel");
-                }
-                textChannel = parent;
-            } else {
-                textChannel = textThreadChannel;
-            }
+            const cached = this.webhooks.get(textChannel.id);
+            if (cached) return cached;
 
             const webhooks = await textChannel.fetchWebhooks();
 
-            this.webhook = webhooks.find(
+            const webhook = webhooks.find(
                 h =>
                     h.name === this.name &&
                     h.owner?.id === this.client.user?.id
@@ -96,10 +100,11 @@ export class WebhookManager {
                     reason: 'Auto-created by WebhookManager'
                 });
 
-            Bot.log.debug(`Webhook ${this.webhook.id} ready for channel ${channelId}`);
-            return this.webhook;
+            this.webhooks.set(textChannel.id, webhook);
+            Bot.log.debug(`Webhook ${webhook.id} ready for channel ${channel.id}`);
+            return webhook;
         } catch (error) {
-            Bot.log.error(`Failed to setup webhook for ${channelId}: ${error}`);
+            Bot.log.error(`Failed to setup webhook for ${channel.id}: ${error}`);
             throw error;
         }
     }
@@ -115,7 +120,8 @@ export class WebhookManager {
         channelId: Snowflake,
         content: string | SendableComponent | WebhookMessageCreateOptions
     ): Promise<Message | null> {
-        const webhook = await this.getWebhook(channelId);
+        const channel = await this.getChannel(channelId);
+        const webhook = await this.getWebhook(channel);
         let options: WebhookMessageCreateOptions = {};
 
         if (SendableComponentBuilder.isSendableComponent(content)) {
@@ -128,8 +134,7 @@ export class WebhookManager {
             options.content = String(content);
         }
 
-        const channelType = await this.getChannel(channelId)
-        if(channelType instanceof ThreadChannel) {
+        if(channel instanceof ThreadChannel) {
             options.threadId = channelId;
         }
 
@@ -159,11 +164,14 @@ export class WebhookManager {
      * Delete webhook
      */
     async delete(channelId: Snowflake, reason?: string): Promise<void> {
-        if (!this.webhook) return;
+        const channel = await this.getChannel(channelId);
+        const webhookChannelId = this.getWebhookChannel(channel).id;
+        const webhook = this.webhooks.get(webhookChannelId);
+        if (!webhook) return;
 
         try {
-            await this.webhook.delete(reason ?? 'Deleted by WebhookManager');
-            Bot.log.info(`Webhook ${this.webhook.id} deleted from ${channelId}`);
+            await webhook.delete(reason ?? 'Deleted by WebhookManager');
+            Bot.log.info(`Webhook ${webhook.id} deleted from ${channelId}`);
         } catch (error) {
             if ((error as Error).message.includes('Unknown Webhook')) {
                 Bot.log.warn(`Webhook already deleted from ${channelId}`);
@@ -171,7 +179,7 @@ export class WebhookManager {
                 Bot.log.error(`Failed to delete webhook from ${channelId}: ${error}`);
             }
         } finally {
-            this.webhook = null;
+            this.webhooks.delete(webhookChannelId);
         }
     }
 }
