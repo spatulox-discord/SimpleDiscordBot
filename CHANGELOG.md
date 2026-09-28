@@ -15,7 +15,7 @@ Date format : dd/mm/yyyy
   - `Bot.interaction.*` accept a plain string and arrays of components, `Bot.interaction.defer(interaction, ephemeral)`
   - `Bot.message.send/sendDM`, `Bot.log.*` and `WebhookManager.send` accept arrays of components
   - `ComponentManager.toInteraction(container, file, footer, ephemeral)`
-  - `ModalField.customId`, `InviteManager.isOld()` / `InviteManager.cleanup()`, `Bot.stopRandomActivity()`, `bot.started`
+  - `ModalField.customId`, `InviteManager.find(code)`, `InviteManager.delete(code)`, `InviteManager.isOld()` / `InviteManager.cleanup()`, `Bot.stopRandomActivity()`, `bot.started`
   - `DiscordRegex.SNOWFLAKE` / `DiscordRegex.DISCORD_URL`, `SendableComponent` / `ConfigLog` types are exported
   - Unit tests (`npm test`), run by `npm run build`
 - Fix :

@@ -6,6 +6,7 @@ import {setTimeout} from "timers/promises";
 import {Log} from "@spatulox/utils";
 import {GuildChannelManager} from "./ChannelManager/GuildChannelManager";
 import {GuildManager} from "./GuildManager";
+import {Bot} from "../../core/Bot";
 
 export class InviteManager {
 
@@ -35,7 +36,6 @@ export class InviteManager {
                 reason: options.reason
             };
 
-            // ✅ guild.invites.create(channelId, options)
             const invite = await guild.invites.create(channelId, inviteOptions);
             Log.info(`Created invite ${invite.code} for channel ${channelId}`);
             return invite;
@@ -47,9 +47,26 @@ export class InviteManager {
 
 
     /**
-     * Delete an invitation
+     * Find an invite by its code or its url (discord.gg/code, discord.com/invite/code)
      */
-    static async delete(invite: Invite): Promise<boolean> {
+    static async find(codeOrUrl: string): Promise<Invite | null> {
+        try {
+            return await Bot.client.fetchInvite(codeOrUrl);
+        } catch (error) {
+            Log.error(`Failed to find invite ${codeOrUrl}: ${error}`);
+            return null;
+        }
+    }
+
+    /**
+     * Delete an invitation, from the invite itself or its code / url
+     */
+    static async delete(invite: Invite): Promise<boolean>;
+    static async delete(codeOrUrl: string): Promise<boolean>;
+    static async delete(inviteOrCode: Invite | string): Promise<boolean> {
+        const invite = typeof inviteOrCode === 'string' ? await this.find(inviteOrCode) : inviteOrCode;
+        if (!invite) return false;
+
         try {
             await invite.delete();
             Log.info(`Deleted invite ${invite.code} from guild ${invite.guild?.id}`);
