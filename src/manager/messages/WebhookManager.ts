@@ -113,18 +113,18 @@ export class WebhookManager {
      * Send message/text/component !
      */
     async send(channelId: Snowflake, content: string): Promise<Message | null>
-    async send(channelId: Snowflake, content: SendableComponent): Promise<Message | null>
+    async send(channelId: Snowflake, content: SendableComponent | SendableComponent[]): Promise<Message | null>
     async send(channelId: Snowflake, content: WebhookMessageCreateOptions): Promise<Message | null>
 
     async send(
         channelId: Snowflake,
-        content: string | SendableComponent | WebhookMessageCreateOptions
+        content: string | SendableComponent | SendableComponent[] | WebhookMessageCreateOptions
     ): Promise<Message | null> {
         const channel = await this.getChannel(channelId);
         const webhook = await this.getWebhook(channel);
         let options: WebhookMessageCreateOptions = {};
 
-        if (SendableComponentBuilder.isSendableComponent(content)) {
+        if (SendableComponentBuilder.isSendableComponent(content) || Array.isArray(content)) {
             options = SendableComponentBuilder.buildMessage(content);
         } else if (typeof content === 'string') {
             options.content = content;

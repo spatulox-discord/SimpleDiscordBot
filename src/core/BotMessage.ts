@@ -15,13 +15,13 @@ export class BotMessage {
     /**
      * Send message to any text-based channel
      */
-    static async send(channel:TextChannel | DMChannel | ThreadChannel | string, content?: string | null, component?: SendableComponent): Promise<Message | null>
-    static async send(channel:TextChannel | DMChannel | ThreadChannel | string, content: SendableComponent): Promise<Message | null>
+    static async send(channel:TextChannel | DMChannel | ThreadChannel | string, content?: string | null, component?: SendableComponent | SendableComponent[]): Promise<Message | null>
+    static async send(channel:TextChannel | DMChannel | ThreadChannel | string, content: SendableComponent | SendableComponent[]): Promise<Message | null>
     static async send(channel:TextChannel | DMChannel | ThreadChannel | string, content: MessageCreateOptions): Promise<Message | null>
     static async send(
         channel: TextChannel | DMChannel | ThreadChannel | string,
-        content?: string | null | SendableComponent | MessageCreateOptions,
-        component?: SendableComponent
+        content?: string | null | SendableComponent | SendableComponent[] | MessageCreateOptions,
+        component?: SendableComponent | SendableComponent[]
     ): Promise<Message | null> {
 
         try {
@@ -40,41 +40,37 @@ export class BotMessage {
                 channel = fetchedChannel as TextChannel;
             }
 
-            let messageCreate: MessageCreateOptions;
-
-            if(typeof content !== "string" && !component) {
-                if(SendableComponentBuilder.isSendableComponent(content)){
-                    messageCreate = SendableComponentBuilder.buildMessage(content);
-                } else {
-                    messageCreate = content as MessageCreateOptions;
-                }
-            } else {
-                content = content as string | null
-                if (content && component) {
-                    messageCreate = SendableComponentBuilder.buildMessage(content, component);
-                } else if (content) {
-                    messageCreate = SendableComponentBuilder.buildMessage(content);
-                } else if (component) {
-                    messageCreate = SendableComponentBuilder.buildMessage(component);
-                } else {
-                    throw new Error("Cannot send message : content and component cannot be null at the same time");
-                }
-            }
-
-            try {
-                return await channel.send(messageCreate)
-            } catch (e) {
-                throw e
-            }
+            return await channel.send(this.buildPayload(content, component));
         } catch (e) {
             Log.error(`Cannot send message : ${e}`);
             return null;
         }
     }
 
-    static async sendDM(userOrId: User | GuildMember | string, content: string, component: SendableComponent): Promise<Message | null>;
-    static async sendDM(userOrId: User | GuildMember | string, content: string | SendableComponent | MessageCreateOptions): Promise<Message | null>;
-    static async sendDM(userOrId: User | GuildMember | string, content: string | SendableComponent | MessageCreateOptions, component?: SendableComponent): Promise<Message | null> {
+    private static buildPayload(
+        content?: string | null | SendableComponent | SendableComponent[] | MessageCreateOptions,
+        component?: SendableComponent | SendableComponent[]
+    ): MessageCreateOptions {
+        if (typeof content === "string") {
+            return component
+                ? SendableComponentBuilder.buildMessage(content, component)
+                : SendableComponentBuilder.buildMessage(content);
+        }
+        if (content === null || content === undefined) {
+            if (!component) {
+                throw new Error("Cannot send message : content and component cannot be null at the same time");
+            }
+            return SendableComponentBuilder.buildMessage(component);
+        }
+        if (SendableComponentBuilder.isSendableComponent(content) || Array.isArray(content)) {
+            return SendableComponentBuilder.buildMessage(content);
+        }
+        return content;
+    }
+
+    static async sendDM(userOrId: User | GuildMember | string, content: string, component: SendableComponent | SendableComponent[]): Promise<Message | null>;
+    static async sendDM(userOrId: User | GuildMember | string, content: string | SendableComponent | SendableComponent[] | MessageCreateOptions): Promise<Message | null>;
+    static async sendDM(userOrId: User | GuildMember | string, content: string | SendableComponent | SendableComponent[] | MessageCreateOptions, component?: SendableComponent | SendableComponent[]): Promise<Message | null> {
         try {
             if (!userOrId) {
                 Log.warn("Cannot send DM: Invalid user / ID");
@@ -94,19 +90,7 @@ export class BotMessage {
                 targetUser = fetchedUser;
             }
 
-            let messageCreate: MessageCreateOptions;
-
-            if (typeof content === "string" && component) {
-                messageCreate = SendableComponentBuilder.buildMessage(content, component);
-            } else if (typeof content === "string") {
-                messageCreate = SendableComponentBuilder.buildMessage(content);
-            } else if (SendableComponentBuilder.isSendableComponent(content)) {
-                messageCreate = SendableComponentBuilder.buildMessage(content);
-            } else {
-                messageCreate = content // as MessageCreateOptions; // MessageCreateOptions
-            }
-
-            return await targetUser.send(messageCreate);
+            return await targetUser.send(this.buildPayload(content, component));
         } catch (error) {
             Log.error(`Cannot send DM to ${userOrId}: ${error}`);
             return null;
