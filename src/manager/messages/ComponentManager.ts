@@ -318,14 +318,15 @@ export class ComponentManager {
     static toInteraction(
         container: ContainerBuilder,
         file: AttachmentBuilder | AttachmentBuilder[] | null = null,
-        footer: boolean = true
+        footer: boolean = true,
+        ephemeral: boolean = false
     ): InteractionReplyOptions {
         if(footer){
             this.footer(container);
         }
         const base: InteractionReplyOptions = {
             components: [container],
-            flags: [MessageFlags.IsComponentsV2]
+            flags: ephemeral ? [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral] : [MessageFlags.IsComponentsV2]
         };
 
         if(file){
@@ -346,8 +347,10 @@ export class ComponentManager {
         if(footer){
             this.footer(container);
         }
+        // The flag is required to turn a deferred reply (or a legacy message) into a Components V2 one
         const base: InteractionEditReplyOptions = {
             components: [container],
+            flags: [MessageFlags.IsComponentsV2]
         };
 
         if(file){
