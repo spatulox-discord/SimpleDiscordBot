@@ -161,10 +161,8 @@ export class GuildUserManager extends BasicUserManager {
             if(!member){
                 throw new Error(`User ${guildId} not found`);
             }
-            //const member = await guild.members.fetch(memberId);
-            const expires = Date.now() + duration
-
-            await member.timeout(expires, reason);
+            // discord.js expects a duration, it adds Date.now() itself
+            await member.timeout(duration, reason);
             Log.info(`Timed out ${memberId} for ${duration}ms in guild ${guildId}: ${reason || 'No reason'}`);
         } catch (error) {
             Log.error(`Failed to timeout ${memberId} in ${guildId}: ${error}`);
