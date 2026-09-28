@@ -24,12 +24,6 @@ export class BotLog {
     private static debugChannel: TextChannel | null = null;
     private static  errorChannel: TextChannel | null = null;
 
-    constructor() {}
-
-    static config(): ConfigLog | undefined {
-        return Bot.config.log
-    }
-
     /**
      * Initialize Discord logging channels and update Bot.log references
      */
@@ -64,64 +58,7 @@ export class BotLog {
         }
     }
 
-    /*public static async initDiscordLogging(): Promise<void> {
-        if (!Bot.client.isReady()) {
-            Log.warn('Client not ready for Discord logging init');
-            return;
-        }
 
-        if (Bot.config.log?.info.channelId) {
-            try {
-                const logCh = await Bot.client.channels.fetch(Bot.config.log.info.channelId) as TextChannel;
-                if (logCh?.isTextBased()) {
-                    BotLog.logChannel = logCh;
-                } else {
-                    Log.warn(`Log channel ${Bot.config.log.info.channelId} invalid`);
-                }
-            } catch (error) {
-                Log.error(`Log channel fetch failed: ${error}`);
-            }
-        }
-
-        if (Bot.config.log?.warn.channelId) {
-            try {
-                const errorCh = await Bot.client.channels.fetch(Bot.config.log.warn.channelId) as TextChannel;
-                if (errorCh?.isTextBased()) {
-                    BotLog.warnChannel = errorCh;
-                } else {
-                    Log.warn(`Warn channel ${Bot.config.log.warn.channelId} invalid`);
-                }
-            } catch (error) {
-                Log.error(`Warn channel fetch failed: ${error}`);
-            }
-        }
-
-        if (Bot.config.log?.error.channelId) {
-            try {
-                const errorCh = await Bot.client.channels.fetch(Bot.config.log.error.channelId) as TextChannel;
-                if (errorCh?.isTextBased()) {
-                    BotLog.errorChannel = errorCh;
-                } else {
-                    Log.warn(`Error channel ${Bot.config.log.error.channelId} invalid`);
-                }
-            } catch (error) {
-                Log.error(`Error channel fetch failed: ${error}`);
-            }
-        }
-
-        if (Bot.config.log?.debug.channelId) {
-            try {
-                const errorCh = await Bot.client.channels.fetch(Bot.config.log.debug.channelId) as TextChannel;
-                if (errorCh?.isTextBased()) {
-                    BotLog.debugChannel = errorCh;
-                } else {
-                    Log.warn(`Debug channel ${Bot.config.log.debug.channelId} invalid`);
-                }
-            } catch (error) {
-                Log.error(`Debug channel fetch failed: ${error}`);
-            }
-        }
-    }*/
 
 
     /**
