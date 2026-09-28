@@ -19,6 +19,12 @@ describe("ModalManager.parseDate", () => {
         }
     });
 
+    it("rejects impossible dates instead of rolling them over", () => {
+        assert.equal(ModalManager.parseDate("31/02/2024"), null);
+        assert.equal(ModalManager.parseDate("2023-02-29"), null);
+        assert.ok(ModalManager.parseDate("2024-02-29"));
+    });
+
     it("rejects the american format", () => {
         assert.equal(ModalManager.parseDate("12/20/2020"), null);
     });

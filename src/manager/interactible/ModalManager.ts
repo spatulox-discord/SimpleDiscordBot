@@ -222,29 +222,34 @@ export class ModalManager {
     static parseDate(value: string): Date | null {
         if (/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(value)) { // 2020-12-20
             const [year, month, day] = value.split('-').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
         if (/^(0[1-9]|[12]\d|3[01])-(0[1-9]|1[0-2])-\d{4}$/.test(value)) { // 20-12-2020
             const [day, month, year] = value.split('-').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
 
         if (/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/.test(value)) { // 20/12/2020
             const [day, month, year] = value.split('/').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
         if (/^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/.test(value)) { // 2020/12/20
             const [year, month, day] = value.split('/').map(Number);
-            const date = new Date(year!, month! - 1, day);
-            return isNaN(date.getTime()) ? null : date;
+            return this.buildDate(year!, month!, day!);
         }
 
         return null;
+    }
+
+    /**
+     * new Date() silently rolls an impossible date over (31/02 becomes 02/03) : reject any date that doesn't round-trip
+     */
+    private static buildDate(year: number, month: number, day: number): Date | null {
+        const date = new Date(year, month - 1, day);
+        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+        return date;
     }
 }
