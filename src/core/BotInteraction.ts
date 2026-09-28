@@ -3,7 +3,8 @@ import {
     InteractionReplyOptions,
     InteractionResponse,
     InteractionUpdateOptions,
-    Message
+    Message,
+    MessageFlags
 } from "discord.js";
 import {SendableComponent, SendableComponentBuilder} from "../manager/builder/SendableComponentBuilder";
 
@@ -92,11 +93,14 @@ export class BotInteraction {
         return await interaction.followUp(this.resolveArgs(content, component, ephemeral));
     }
 
-    static async defer(interaction: BaseInteraction): Promise<InteractionResponse<boolean>  | void> {
+    /**
+     * @param ephemeral Only used by commands : components and modals defer the message they come from
+     */
+    static async defer(interaction: BaseInteraction, ephemeral: boolean = false): Promise<InteractionResponse<boolean>  | void> {
 
         if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
             if (!interaction.deferred && !interaction.replied) {
-                return await interaction.deferReply();
+                return await interaction.deferReply(ephemeral ? {flags: MessageFlags.Ephemeral} : undefined);
             }
             return;
         }
