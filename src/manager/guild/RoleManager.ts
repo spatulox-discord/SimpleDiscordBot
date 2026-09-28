@@ -60,8 +60,9 @@ export class RoleManager {
      * Toggle role (add/remove)
      */
     static async toggle(member: GuildMember, roleIdOrName: Snowflake | string): Promise<'added' | 'removed'> {
-        const role = member.roles.cache.get(roleIdOrName as Snowflake) ||
-            member.roles.cache.find(r => r.name.toLowerCase() === roleIdOrName.toString().toLowerCase());
+        // Search in the guild roles : the member doesn't own the role when it needs to be added
+        const role = member.guild.roles.cache.get(roleIdOrName as Snowflake) ||
+            member.guild.roles.cache.find(r => r.name.toLowerCase() === roleIdOrName.toString().toLowerCase());
 
         if (!role) {
             Log.warn(`Role ${roleIdOrName} not found`);
