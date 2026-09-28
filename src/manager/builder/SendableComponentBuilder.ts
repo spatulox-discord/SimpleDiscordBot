@@ -4,10 +4,9 @@ import {
     InteractionReplyOptions,
     InteractionUpdateOptions, MessageCreateOptions,
     MessageFlags,
-    MessageActionRowComponentBuilder, ContainerBuilder, TextDisplayBuilder
+    MessageActionRowComponentBuilder, ContainerBuilder, TextDisplayBuilder, BaseSelectMenuBuilder
 } from "discord.js";
 import {SelectMenuManager} from "../interactible/SelectMenuManager";
-import {BaseSelectMenuBuilder} from "@discordjs/builders";
 
 //Any interface/type with those fields
 type MessageFields = {
