@@ -130,7 +130,8 @@ export class ModalManager {
             label: title.label,
             placeholder: title.placeholder ?? `Enter ${title.label.toLowerCase()}`,
             type: ModalFieldType.SHORT,
-            required: title.required
+            required: title.required,
+            value: title.value
         }
 
         const descField: InternalModalField = {
@@ -138,7 +139,8 @@ export class ModalManager {
             label: description.label,
             placeholder: description.placeholder ?? `Enter ${description.label.toLowerCase()}`,
             type: ModalFieldType.LONG,
-            required: description.required
+            required: description.required,
+            value: description.value
         }
 
         modal.addLabelComponents(this._createField(titleField))
