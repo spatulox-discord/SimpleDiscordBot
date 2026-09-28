@@ -74,7 +74,7 @@ export class BotInteraction {
         component: SendableComponent | boolean = false,
         ephemeral: boolean = false
     ): Promise<InteractionResponse<boolean> | Message<boolean> | boolean> {
-        if (!interaction.isMessageComponent()) return false;
+        if (!interaction.isRepliable()) return false;
 
         const options = this.buildReplyOptions(
             typeof content === 'string' ? content : "",
