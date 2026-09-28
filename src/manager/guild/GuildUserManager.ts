@@ -75,7 +75,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             return member.voice.channelId !== null;
         } catch (error) {
@@ -91,7 +91,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setMute(true, reason);
             Log.info(`Server muted ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -108,7 +108,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setMute(false, reason);
             Log.info(`Server unmuted ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -125,7 +125,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setDeaf(true, reason);
             Log.info(`Server deafened ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -142,7 +142,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.voice.setDeaf(false, reason);
             Log.info(`Server undeafened ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -159,7 +159,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             // discord.js expects a duration, it adds Date.now() itself
             await member.timeout(duration, reason);
@@ -177,7 +177,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.timeout(null, reason);
             Log.info(`Untimed out ${memberId} in guild ${guildId}: ${reason || 'No reason'}`);
@@ -194,7 +194,7 @@ export class GuildUserManager extends BasicUserManager {
         try {
             const member = await GuildManager.user.findInGuild(guildId, memberId)
             if(!member){
-                throw new Error(`User ${guildId} not found`);
+                throw new Error(`Member ${memberId} not found in guild ${guildId}`);
             }
             await member.kick(reason);
             Log.info(`Kicked ${memberId} from guild ${guildId}: ${reason || 'No reason'}`);
