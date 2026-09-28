@@ -29,3 +29,24 @@ describe("ModalManager.parseDate", () => {
         assert.equal(ModalManager.parseDate("12/20/2020"), null);
     });
 });
+
+describe("ModalManager presets", () => {
+    const inputId = (modal: ReturnType<typeof ModalManager.date>) =>
+        (modal.toJSON().components[0] as unknown as {component: {custom_id: string}}).component.custom_id;
+
+    it("suffix the modal customId by default", () => {
+        const modal = ModalManager.date("mod");
+        assert.equal(modal.data.custom_id, "mod_date");
+        assert.equal(inputId(modal), "mod_date_input");
+        assert.equal(ModalManager.number("mod").data.custom_id, "mod_number");
+        assert.equal(ModalManager.phone("mod").data.custom_id, "mod_phone_number");
+    });
+
+    it("keep the given customId when suffix is false", () => {
+        const modal = ModalManager.date("mod", undefined, undefined, false);
+        assert.equal(modal.data.custom_id, "mod");
+        assert.equal(inputId(modal), "mod_input");
+        assert.equal(ModalManager.number("mod", undefined, undefined, false).data.custom_id, "mod");
+        assert.equal(ModalManager.phone("mod", undefined, undefined, false).data.custom_id, "mod");
+    });
+});

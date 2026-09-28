@@ -153,35 +153,42 @@ export class ModalManager {
 
     /**
      * Date modal preset
+     * @param suffix true (default) : the modal customId is `${customId}_date` and the input `${customId}_date_input`,
+     * false : the modal keeps `customId` and the input is `${customId}_input`. Same for number() (_number) and phone() (_phone_number)
      */
     static date(
         customId: string,
         modalTitle: string = "Select Date",
-        inputLabel: string = "Date"
+        inputLabel: string = "Date",
+        suffix: boolean = true
     ): ModalBuilder {
-        return this.simple(customId, modalTitle, {label:inputLabel, type: ModalFieldType.DATE});
+        return this.simple(suffix ? `${customId}_date` : customId, modalTitle, {label:inputLabel, type: ModalFieldType.DATE});
     }
 
     /**
      * Number modal preset
+     * @param suffix See date() : `${customId}_number` by default, `customId` when false
      */
     static number(
         customId: string,
         modalTitle: string = "Enter a Number",
-        inputLabel: string = "Number"
+        inputLabel: string = "Number",
+        suffix: boolean = true
     ): ModalBuilder {
-        return this.simple(customId, modalTitle, {label:inputLabel, type: ModalFieldType.NUMBER, placeholder: "Enter a number"});
+        return this.simple(suffix ? `${customId}_number` : customId, modalTitle, {label:inputLabel, type: ModalFieldType.NUMBER, placeholder: "Enter a number"});
     }
 
     /**
-     * Number modal preset
+     * Phone modal preset
+     * @param suffix See date() : `${customId}_phone_number` by default, `customId` when false
      */
     static phone(
         customId: string,
         modalTitle: string = "Enter a Phone number",
-        inputLabel: string = "Phone number"
+        inputLabel: string = "Phone number",
+        suffix: boolean = true
     ): ModalBuilder {
-        return this.simple(customId, modalTitle, {label:inputLabel, type: ModalFieldType.PHONE, placeholder: "Enter a phone number"});
+        return this.simple(suffix ? `${customId}_phone_number` : customId, modalTitle, {label:inputLabel, type: ModalFieldType.PHONE, placeholder: "Enter a phone number"});
     }
 
     /**

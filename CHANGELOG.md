@@ -4,7 +4,6 @@ Date format : dd/mm/yyyy
 ### Unreleased (contains breaking changes : next major)
 - Breaking :
   - `GuildManager.searchMember()`, `GuildManager.isMemberInGuild()` and `GuildUserManager.isInVoice()` now take `(guildId, memberId)` like every other member method
-  - `ModalManager.date()` / `number()` / `phone()` keep the given customId for the modal (it was suffixed with `_date` / `_number` / `_phone_number`), the input is `${customId}_input`
   - `ButtonManager.toMessage/toInteraction/toInteractionEdit([...buttons])` group the buttons by 5 per row instead of one row per button
   - `GuildManager.channel.text.find()` / `voice.find()` only return a `TextChannel` / `VoiceChannel`
   - `GuildChannelManager.delete()` returns `false` on failure instead of throwing
@@ -15,6 +14,7 @@ Date format : dd/mm/yyyy
   - `Bot.interaction.*` accept a plain string and arrays of components, `Bot.interaction.defer(interaction, ephemeral)`
   - `Bot.message.send/sendDM`, `Bot.log.*` and `WebhookManager.send` accept arrays of components
   - `ComponentManager.toInteraction(container, file, footer, ephemeral)`
+  - `ModalManager.date()` / `number()` / `phone()` take a `suffix` parameter (default `true`) : `false` keeps the given customId for the modal instead of suffixing it with `_date` / `_number` / `_phone_number`, the input is then `${customId}_input`
   - `SelectMenuManager.option()` is public : builds one option or an array of options
   - `ModalField.customId`, `InviteManager.find(code)`, `InviteManager.delete(code)`, `InviteManager.isOld()` / `InviteManager.cleanup()`, `Bot.stopRandomActivity()`, `bot.started`
   - `DiscordRegex.SNOWFLAKE` / `DiscordRegex.DISCORD_URL`, `SendableComponent` / `ConfigLog` types are exported
