@@ -135,11 +135,12 @@ export class SelectMenuManager {
     }
 
     /**
-     * Quick option creator
+     * Quick option creator : one option, or several at once
+     * `menu.addOptions(SelectMenuManager.option([{label: "A", value: "a"}, {label: "B", value: "b"}]))`
      */
-    private static option(option: SelectMenuCreateOption): StringSelectMenuOptionBuilder;
-    private static option(options: SelectMenuCreateOption[]): StringSelectMenuOptionBuilder[];
-    private static option(option: SelectMenuCreateOption | SelectMenuCreateOption[]): StringSelectMenuOptionBuilder | StringSelectMenuOptionBuilder[] {
+    static option(option: SelectMenuCreateOption): StringSelectMenuOptionBuilder;
+    static option(options: SelectMenuCreateOption[]): StringSelectMenuOptionBuilder[];
+    static option(option: SelectMenuCreateOption | SelectMenuCreateOption[]): StringSelectMenuOptionBuilder | StringSelectMenuOptionBuilder[] {
         if (Array.isArray(option)) {
             return option.map((opt: SelectMenuCreateOption) => this._createOption(opt));
         }
