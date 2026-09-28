@@ -24,6 +24,10 @@ export class BotLog {
     private static debugChannel: TextChannel | null = null;
     private static  errorChannel: TextChannel | null = null;
 
+    static config(): ConfigLog | undefined {
+        return Bot.config?.log
+    }
+
     /**
      * Initialize Discord logging channels and update Bot.log references
      */

@@ -9,7 +9,7 @@ Date format : dd/mm/yyyy
   - `GuildManager.channel.text.find()` / `voice.find()` only return a `TextChannel` / `VoiceChannel`
   - `GuildChannelManager.delete()` returns `false` on failure instead of throwing
   - `DISCORD_BOT_DEV=false` (or `0`, `no`, `off`, empty) no longer enables the dev mode
-  - `Bot._client` is private (use `Bot.client`), `Bot.log.config()` is removed (use `Bot.config.log`)
+  - `Bot._client` is private (use `Bot.client`)
 - Add :
   - `PaginationManager` is exported : `PaginationManager.send(interaction, pages, options)`
   - `Bot.interaction.*` accept a plain string and arrays of components, `Bot.interaction.defer(interaction, ephemeral)`
