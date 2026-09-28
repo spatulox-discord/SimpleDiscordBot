@@ -16,10 +16,13 @@ export class ButtonManager {
     static create(options: ButtonOptions & { style: ButtonStyle }): ButtonBuilder {
         const btn = new ButtonBuilder()
             .setCustomId(options.customId)
-            .setLabel(options.label ?? "Button")
             .setStyle(options.style)
             .setDisabled(options.disabled ?? false);
 
+        // An emoji only button is valid : the default label is only needed when there is nothing to show
+        if (options.label || !options.emoji) {
+            btn.setLabel(options.label ?? "Button");
+        }
         if (options.emoji) {
             btn.setEmoji(options.emoji);
         }
