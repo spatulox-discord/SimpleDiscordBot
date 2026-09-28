@@ -29,6 +29,7 @@ export class Bot {
     private static _client: Client;
     private static token: string;
     private static _config: BotConfig;
+    private static randomActivityInterval: NodeJS.Timeout | null = null;
 
     get config(): BotConfig { return Bot._config; }
     get client(): Client { return Bot._client; }
@@ -108,6 +109,9 @@ export class Bot {
             return
         }
 
+        // Calling it again replaces the previous rotation instead of stacking a second interval
+        Bot.stopRandomActivity();
+
         const pickRandom = () => {
             const random = randomActivity[Math.floor(Math.random() * randomActivity.length)]!;
             Bot.setActivity(random.message, random.type);
@@ -121,11 +125,19 @@ export class Bot {
         }
 
         pickRandom();
-        setInterval(async () => {
-            pickRandom();
-        }, intervalMs);
-        Log.info(`Random activity started (every ${Math.round(intervalMs / 60000)}min)`);
+        Bot.randomActivityInterval = setInterval(pickRandom, intervalMs);
+        Log.info(`Random activity started (every ${intervalMs >= 60000 ? `${Math.round(intervalMs / 60000)}min` : `${Math.round(intervalMs / 1000)}s`})`);
         return
+    }
+
+    /**
+     * Stop the rotation started by setRandomActivity(), the current activity is kept
+     */
+    static stopRandomActivity() {
+        if (Bot.randomActivityInterval) {
+            clearInterval(Bot.randomActivityInterval);
+            Bot.randomActivityInterval = null;
+        }
     }
 
 }
