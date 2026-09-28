@@ -46,7 +46,7 @@ export interface ComponentManagerFileInput {
 export class ComponentManager {
 
     private static get DEFAULT_COLOR(): number | SimpleColor {
-        return Bot.config?.defaultSimpleColor || SimpleColor.default;
+        return Bot.config?.defaultSimpleColor ?? SimpleColor.default;
     }
 
     /**
