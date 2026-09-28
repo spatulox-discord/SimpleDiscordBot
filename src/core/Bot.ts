@@ -36,6 +36,11 @@ export class Bot {
     static get client(): Client { return Bot._client; }
     static get config(): BotConfig { return Bot._config; }
 
+    /**
+     * Resolves once the login is done (true) or has definitively failed (false)
+     */
+    public readonly started: Promise<boolean>;
+
     constructor(client: Client, config: BotConfig = {}) {
 
         Log.info('----------------------------------------------------');
@@ -45,36 +50,38 @@ export class Bot {
         Bot._config = config
         Bot._client = client;
 
-        (async() => {
+        // Registered before login() so the event can't be missed, and only once even if login() is called again
+        Bot._client.once(Events.ClientReady, async () => {
+            if (Bot._client.user) {
+                await Bot.log.initDiscordLogging()
+                Log.info(`Connected on ${Bot._client.guilds.cache.size} servers as ${Bot._client.user.tag}`);
+                Bot.log.info(EmbedManager.description("Bot Started"))
+            }
+        });
+
+        this.started = (async() => {
             Log.info(`Using discord.js version: ${version}`);
             Log.info(`Using simplediscordbot version: ${SimpleDiscordBotInfo.version}`);
             Log.info('Trying to connect to Discord Servers')
 
             await InternetChecker.checkConnection(3)
 
-            await this.login()
-
-        })()
+            return await this.login()
+        })().catch(error => {
+            Log.error(`Failed to start the bot: ${error}`);
+            return false;
+        });
     }
 
     public async login(maxTries: number = 3): Promise<boolean> {
-        let success = false;
+        if (Bot._client.isReady()) return true;
+
         let tries = 0;
 
-        while (!success && tries < maxTries) {
+        while (tries < maxTries) {
             try {
                 await Bot._client.login(Bot.token);
-                success = true;
-
-                Bot._client.on(Events.ClientReady, async () => {
-                    if (Bot._client.user) {
-                        await Bot.log.initDiscordLogging()
-                        Log.info(`Connected on ${Bot._client.guilds.cache.size} servers as ${Bot._client.user.tag}`);
-                        //Bot._client.guilds.cache.forEach(g => console.log(` - ${g.name}`));
-                        Bot.log.info(EmbedManager.description("Bot Started"))
-                    }
-                });
-
+                return true;
             } catch (error) {
                 Log.error(`Connection error : ${error}. Trying again...`);
                 tries++;
@@ -84,12 +91,8 @@ export class Bot {
             }
         }
 
-        if (!success) {
-            Log.error('Impossible to connect the bot after 3 attempts');
-            return false;
-        }
-
-        return true;
+        Log.error(`Impossible to connect the bot after ${maxTries} attempts`);
+        return false;
     }
 
     static setActivity(message: string, type: ActivityType) {
