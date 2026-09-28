@@ -93,18 +93,31 @@ export class ButtonManager {
         };
     }
 
+    /**
+     * Consecutive buttons are grouped by 5 in the same row (like row() does), action rows are kept as is
+     */
     private static createRowsToReturn(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): ActionRowBuilder<ButtonBuilder>[]{
+        const items: (ButtonBuilder | ActionRowBuilder<ButtonBuilder>)[] = Array.isArray(button) ? button : [button];
+        const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+        let pending: ButtonBuilder[] = [];
 
-        if (Array.isArray(button)) {
-            return button.map(btn =>
-                btn instanceof ActionRowBuilder
-                    ? btn
-                    : ButtonManager.row(btn)
-            );
+        const flush = () => {
+            for (let i = 0; i < pending.length; i += 5) {
+                rows.push(ButtonManager.row(pending.slice(i, i + 5)));
+            }
+            pending = [];
+        };
+
+        for (const item of items) {
+            if (item instanceof ActionRowBuilder) {
+                flush();
+                rows.push(item);
+            } else {
+                pending.push(item);
+            }
         }
+        flush();
 
-        return button instanceof ActionRowBuilder
-            ? [button]
-            : [ButtonManager.row(button)];
+        return rows;
     }
 }
