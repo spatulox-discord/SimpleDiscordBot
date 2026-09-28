@@ -157,7 +157,7 @@ export class ModalManager {
         modalTitle: string = "Select Date",
         inputLabel: string = "Date"
     ): ModalBuilder {
-        return this.simple(`${customId}_date`, modalTitle, {label:inputLabel, type: ModalFieldType.DATE});
+        return this.simple(customId, modalTitle, {label:inputLabel, type: ModalFieldType.DATE});
     }
 
     /**
@@ -168,7 +168,7 @@ export class ModalManager {
         modalTitle: string = "Enter a Number",
         inputLabel: string = "Number"
     ): ModalBuilder {
-        return this.simple(`${customId}_number`, modalTitle, {label:inputLabel, type: ModalFieldType.NUMBER, placeholder: "Enter a number"});
+        return this.simple(customId, modalTitle, {label:inputLabel, type: ModalFieldType.NUMBER, placeholder: "Enter a number"});
     }
 
     /**
@@ -179,7 +179,7 @@ export class ModalManager {
         modalTitle: string = "Enter a Phone number",
         inputLabel: string = "Phone number"
     ): ModalBuilder {
-        return this.simple(`${customId}_phone_number`, modalTitle, {label:inputLabel, type: ModalFieldType.PHONE, placeholder: "Enter a phone number"});
+        return this.simple(customId, modalTitle, {label:inputLabel, type: ModalFieldType.PHONE, placeholder: "Enter a phone number"});
     }
 
     /**
