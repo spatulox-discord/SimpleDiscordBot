@@ -7,12 +7,12 @@ export class GuildTextChannelManager extends GuildChannelManager {
 
     static async findInGuild(guildId: string, channelId: string): Promise<TextChannel | null> {
         const channel = await super.findInGuild(guildId, channelId);
-        return channel?.isTextBased() ? channel as TextChannel : null;
+        return channel instanceof TextChannel ? channel : null;
     }
 
     static async find(channelId: string): Promise<TextChannel | null> {
         const channel = await super.find(channelId);
-        return channel?.isTextBased() ? channel as TextChannel : null;
+        return channel instanceof TextChannel ? channel : null;
     }
 
     static findAll(guildId: string): TextChannel[] {
