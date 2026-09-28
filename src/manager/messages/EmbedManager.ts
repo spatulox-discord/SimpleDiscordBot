@@ -1,7 +1,7 @@
 import {
     EmbedBuilder, EmbedFooterData,
     InteractionDeferReplyOptions, InteractionEditReplyOptions, InteractionReplyOptions, MessageCreateOptions,
-    MessageFlags
+    MessageFlags, InteractionUpdateOptions,
 } from "discord.js";
 import { Bot } from '../../core/Bot';
 import {SimpleColor} from "../../constants/SimpleColor";
@@ -125,6 +125,13 @@ export class EmbedManager {
         return {
             embeds: [embed]
         };
+    }
+
+    /**
+     * Same as toInteractionEdit(), typed for interaction.update() : buttons, select menus and modals opened from a message
+     */
+    static toInteractionUpdate(embed: EmbedBuilder): InteractionUpdateOptions {
+        return this.toInteractionEdit(embed);
     }
 
 

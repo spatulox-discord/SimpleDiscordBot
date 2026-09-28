@@ -7,7 +7,7 @@ import {
     MentionableSelectMenuBuilder,
     ChannelSelectMenuBuilder,
     MessageActionRowComponentBuilder, ChannelType, MessageCreateOptions, MessageFlags,
-    InteractionReplyOptions, InteractionEditReplyOptions,
+    InteractionReplyOptions, InteractionEditReplyOptions, InteractionUpdateOptions,
 } from "discord.js";
 
 export type SelectMenuCreateOption = {
@@ -212,6 +212,15 @@ export class SelectMenuManager {
         return {
             components: this._createRowsToReturn(menus)
         };
+    }
+
+    /**
+     * Same as toInteractionEdit(), typed for interaction.update() : buttons, select menus and modals opened from a message
+     */
+    static toInteractionUpdate(
+        menus: SelectMenuList | SelectMenuList[] | ActionRowBuilder<MessageActionRowComponentBuilder> | ActionRowBuilder<MessageActionRowComponentBuilder>[]
+    ): InteractionUpdateOptions {
+        return this.toInteractionEdit(menus);
     }
 
     private static _createRowsToReturn(menus: SelectMenuList | SelectMenuList[] | ActionRowBuilder<MessageActionRowComponentBuilder> | ActionRowBuilder<MessageActionRowComponentBuilder>[]): ActionRowBuilder<MessageActionRowComponentBuilder>[]{
