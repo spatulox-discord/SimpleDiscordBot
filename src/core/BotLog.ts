@@ -182,7 +182,7 @@ export class BotLog {
      * Send ERROR log - TEXT or EMBED ! Respecte config.log.error
      */
     static async error(content: string | SendableComponent): Promise<Message | void> {
-        const logConfig = Bot.config.log;
+        const logConfig = Bot.config?.log;
 
         // 1. CONSOLE selon config (ou défaut ON)
         if (!logConfig || logConfig.error.console) {
@@ -199,7 +199,7 @@ export class BotLog {
      * Send WARNING log - TEXT or EMBED ! Respecte config.log.warn
      */
     static async warn(content: string | SendableComponent): Promise<Message | void> {
-        const logConfig = Bot.config.log;
+        const logConfig = Bot.config?.log;
 
         if (!logConfig || logConfig?.warn.console) {
             if(typeof content == 'string') { Log.warn(content) }
@@ -215,7 +215,7 @@ export class BotLog {
      */
     static async debug(content: string | SendableComponent): Promise<Message | void> {
         if(!BotEnv.dev) return
-        const logConfig = Bot.config.log;
+        const logConfig = Bot.config?.log;
 
         if (!logConfig || logConfig?.debug.console) {
             if(typeof content == 'string') { Log.debug(content) }
