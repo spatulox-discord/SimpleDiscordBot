@@ -1,7 +1,7 @@
 # Changelog
 Date format : dd/mm/yyyy
 
-### Unreleased (contains breaking changes : next major)
+### 29/09/26 - 4.0.0
 - Breaking :
   - `GuildManager.searchMember()`, `GuildManager.isMemberInGuild()` and `GuildUserManager.isInVoice()` now take `(guildId, memberId)` like every other member method
   - `toInteractionEdit()` is removed from `EmbedManager`, `ComponentManager`, `ButtonManager` and `SelectMenuManager` : use `toInteractionUpdate()`, same parameters, it works with `interaction.editReply()` and `interaction.update()`
