@@ -1,6 +1,10 @@
 # Changelog
 Date format : dd/mm/yyyy
 
+### 29/09/2026 - 4.0.1
+- Fix :
+  - `BotEnv.dev` follows the same rule as the `dim` CLI (`@spatulox/discord-interaction-manager`) : only `DISCORD_BOT_DEV=true` or `1` enable the dev mode. Other values (`yes`, `dev`...) enabled it on the bot but not in `dim`, so the bot loaded the `_dev` interactions while `dim` deployed the prod ones
+
 ### 29/09/26 - 4.0.0
 - Breaking :
   - `GuildManager.searchMember()`, `GuildManager.isMemberInGuild()` and `GuildUserManager.isInVoice()` now take `(guildId, memberId)` like every other member method

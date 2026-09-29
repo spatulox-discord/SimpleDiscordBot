@@ -5,9 +5,7 @@ export const BotEnv = {
         return token;
     },
     get dev(): boolean {
-        // Any defined value enables the dev mode, except the explicit "off" ones
-        const dev = process.env.DISCORD_BOT_DEV;
-        if (dev === undefined) return false;
-        return !["", "false", "0", "no", "off"].includes(dev.trim().toLowerCase());
+        // Same rule as the dim CLI (discord-interaction-manager) : only true / 1 enable the dev mode
+        return ["true", "1"].includes(process.env.DISCORD_BOT_DEV?.trim().toLowerCase() ?? "");
     }
 } as const;
