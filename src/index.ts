@@ -23,7 +23,7 @@ export type { ComponentManagerCreate, ComponentManagerField, ComponentManagerFil
 export { ChartManager } from "./manager/messages/ChartManager";
 export type { ProgressBarOptions, ProgressBarRow, SparklineOptions, SparklinesOptions, SparklineRow } from "./manager/messages/ChartManager";
 export { ButtonManager } from "./manager/interactible/ButtonManager";
-export type { ButtonOptions } from "./manager/interactible/ButtonManager";
+export type { ButtonOptions, ButtonInput } from "./manager/interactible/ButtonManager";
 export { PaginationManager } from "./manager/interactible/PaginationManager";
 export type { PaginationPage, PaginationOptions } from "./manager/interactible/PaginationManager";
 

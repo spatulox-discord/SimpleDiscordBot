@@ -36,6 +36,7 @@ Date format : dd/mm/yyyy
   - `SimpleColor.black` as `defaultSimpleColor`, crashes when using `EmbedManager` / `Bot.log` before the Bot is instantiated
   - `Bot.message.success/error` printed the message twice, `Bot.message.send(channelId)` only looked in the cache
   - `ModalManager.titleDescription()` ignored prefilled values, `parseDate()` accepted `31/02`
+  - `ButtonManager.toMessage()` & co refused an array mixing rows and buttons at the type level (it already worked at runtime) : they take the exported `ButtonInput` type
   - `DiscordRegex` : 17 to 20 digits ids, invites, `isDiscordUrl()`, usernames with dots, every unicode emoji
   - `ReactionManager.remove()` with custom emojis, DMs support
   - `GuildUserManager.rename()` retried on permission errors, error logs of `mute()` and member lookups
