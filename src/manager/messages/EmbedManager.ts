@@ -1,7 +1,7 @@
 import {
     EmbedBuilder, EmbedFooterData,
-    InteractionDeferReplyOptions, InteractionEditReplyOptions, InteractionReplyOptions, MessageCreateOptions,
-    MessageFlags, InteractionUpdateOptions,
+    InteractionDeferReplyOptions, InteractionReplyOptions, MessageCreateOptions,
+    MessageFlags, InteractionUpdateOptions, MessageEditOptions,
 } from "discord.js";
 import { Bot } from '../../core/Bot';
 import {SimpleColor} from "../../constants/SimpleColor";
@@ -119,19 +119,19 @@ export class EmbedManager {
     }
 
     /**
-     * Transform embed into objet for interaction.editReply()
+     * Options to edit an existing message : message.edit()
      */
-    static toInteractionEdit(embed: EmbedBuilder): InteractionEditReplyOptions {
+    static toMessageUpdate(embed: EmbedBuilder): MessageEditOptions {
         return {
             embeds: [embed]
         };
     }
 
     /**
-     * Same as toInteractionEdit(), typed for interaction.update() : buttons, select menus and modals opened from a message
+     * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies)
      */
     static toInteractionUpdate(embed: EmbedBuilder): InteractionUpdateOptions {
-        return this.toInteractionEdit(embed);
+        return this.toMessageUpdate(embed);
     }
 
 

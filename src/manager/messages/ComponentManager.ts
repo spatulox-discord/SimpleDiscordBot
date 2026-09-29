@@ -12,7 +12,7 @@ import {
     ButtonBuilder,
     AttachmentBuilder,
     FileBuilder,
-    ActionRowBuilder, InteractionReplyOptions, InteractionEditReplyOptions, InteractionUpdateOptions,
+    ActionRowBuilder, InteractionReplyOptions, InteractionUpdateOptions, MessageEditOptions,
 } from "discord.js";
 import { Bot } from '../../core/Bot';
 import {SelectMenuList, SelectMenuManager} from "../interactible/SelectMenuManager";
@@ -342,16 +342,19 @@ export class ComponentManager {
         return base;
     }
 
-    static toInteractionEdit(
+    /**
+     * Options to edit an existing message : message.edit(). The Components V2 flag is set, so a legacy message can be turned into a V2 one
+     */
+    static toMessageUpdate(
         container: ContainerBuilder,
         file: AttachmentBuilder | AttachmentBuilder[] | null = null,
         footer: boolean = true
-    ): InteractionEditReplyOptions {
+    ): MessageEditOptions {
         if(footer){
             container = this.footer(container);
         }
         // The flag is required to turn a deferred reply (or a legacy message) into a Components V2 one
-        const base: InteractionEditReplyOptions = {
+        const base: MessageEditOptions = {
             components: [container],
             flags: [MessageFlags.IsComponentsV2]
         };
@@ -367,13 +370,13 @@ export class ComponentManager {
     }
 
     /**
-     * Same as toInteractionEdit(), typed for interaction.update() (with the Components V2 flag) : buttons, select menus and modals opened from a message
+     * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies), with the Components V2 flag
      */
     static toInteractionUpdate(
         container: ContainerBuilder,
         file: AttachmentBuilder | AttachmentBuilder[] | null = null,
         footer: boolean = true
     ): InteractionUpdateOptions {
-        return this.toInteractionEdit(container, file, footer);
+        return this.toMessageUpdate(container, file, footer);
     }
 }

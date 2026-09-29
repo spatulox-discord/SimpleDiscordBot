@@ -7,7 +7,7 @@ import {
     MentionableSelectMenuBuilder,
     ChannelSelectMenuBuilder,
     MessageActionRowComponentBuilder, ChannelType, MessageCreateOptions, MessageFlags,
-    InteractionReplyOptions, InteractionEditReplyOptions, InteractionUpdateOptions,
+    InteractionReplyOptions, InteractionUpdateOptions, MessageEditOptions,
 } from "discord.js";
 
 export type SelectMenuCreateOption = {
@@ -206,21 +206,24 @@ export class SelectMenuManager {
         };
     }
 
-    static toInteractionEdit(
+    /**
+     * Options to edit an existing message : message.edit()
+     */
+    static toMessageUpdate(
         menus: SelectMenuList | SelectMenuList[] | ActionRowBuilder<MessageActionRowComponentBuilder> | ActionRowBuilder<MessageActionRowComponentBuilder>[]
-    ): InteractionEditReplyOptions {
+    ): MessageEditOptions {
         return {
             components: this._createRowsToReturn(menus)
         };
     }
 
     /**
-     * Same as toInteractionEdit(), typed for interaction.update() : buttons, select menus and modals opened from a message
+     * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies)
      */
     static toInteractionUpdate(
         menus: SelectMenuList | SelectMenuList[] | ActionRowBuilder<MessageActionRowComponentBuilder> | ActionRowBuilder<MessageActionRowComponentBuilder>[]
     ): InteractionUpdateOptions {
-        return this.toInteractionEdit(menus);
+        return this.toMessageUpdate(menus);
     }
 
     private static _createRowsToReturn(menus: SelectMenuList | SelectMenuList[] | ActionRowBuilder<MessageActionRowComponentBuilder> | ActionRowBuilder<MessageActionRowComponentBuilder>[]): ActionRowBuilder<MessageActionRowComponentBuilder>[]{

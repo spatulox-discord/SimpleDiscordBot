@@ -1,7 +1,7 @@
 import {
     ButtonBuilder,
     ButtonStyle,
-    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, InteractionEditReplyOptions, MessageFlags, InteractionUpdateOptions,
+    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, MessageFlags, InteractionUpdateOptions, MessageEditOptions,
 } from "discord.js";
 
 export interface ButtonOptions {
@@ -87,17 +87,20 @@ export class ButtonManager {
         };
     }
 
-    static toInteractionEdit(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionEditReplyOptions {
+    /**
+     * Options to edit an existing message : message.edit()
+     */
+    static toMessageUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): MessageEditOptions {
         return {
             components: this.createRowsToReturn(button)
         };
     }
 
     /**
-     * Same as toInteractionEdit(), typed for interaction.update() : buttons, select menus and modals opened from a message
+     * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies)
      */
     static toInteractionUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionUpdateOptions {
-        return this.toInteractionEdit(button);
+        return this.toMessageUpdate(button);
     }
 
     /**
