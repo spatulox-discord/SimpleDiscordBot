@@ -1,23 +1,33 @@
-import {ChatInputCommandInteraction} from "discord.js";
-import {WebhookManager} from "../../manager/messages/WebhookManager";
-import {Bot} from "../../core/Bot";
-import {EmbedManager} from "../../manager/messages/EmbedManager";
-import {ComponentManager} from "../../manager/messages/ComponentManager";
-import {SelectMenuManager} from "../../manager/interactible/SelectMenuManager";
+import {TextChannel, ThreadAutoArchiveDuration} from "discord.js";
+import {Bot, ComponentManager, EmbedManager, GuildManager, SelectMenuManager, WebhookManager} from "../../index";
+import {STATIC_PREFIX, UiTester} from "./UiTester";
 
-export function webhook_test(interaction: ChatInputCommandInteraction) {
+export async function webhook_test(t: UiTester) {
+    const web = new WebhookManager(Bot.client, "Amiral", "./src/test/img/amiral_super_terre.jpg")
 
-    try {
-        interaction.reply("Sending wbehook...")
+    await t.send("**Send**")
+    await t.sent("webhook.send(string)", web.send(t.channelId, "webhook.send(string)"))
+    await t.sent("webhook.send(embed)", web.send(t.channelId, EmbedManager.error("webhook.send(embed)")))
+    await t.sent("webhook.send(container)", web.send(t.channelId, ComponentManager.success("webhook.send(container)")))
+    await t.sent("webhook.send(select)", web.send(t.channelId, SelectMenuManager.users(`${STATIC_PREFIX}webhook_users`)))
+    await t.sent("webhook.send([embed, select])", web.send(t.channelId, [
+        EmbedManager.simple("webhook.send([embed, select])"),
+        SelectMenuManager.roles(`${STATIC_PREFIX}webhook_roles`),
+    ]))
+    await t.sent("webhook.success()", web.success(t.channelId, "webhook.success()"))
 
-        const web = new WebhookManager(Bot.client, "Amiral", "./src/test/img/amiral_super_terre.jpg")
-        const web2 = new WebhookManager(Bot.client, "Linux", "https://imgs.search.brave.com/SZFEB5gZc-95omrZUtOmwS23cD0aCSh04HOvoByG6Jk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9keW1h/LmZyL2Jsb2cvY29u/dGVudC9pbWFnZXMv/c2l6ZS93OTYwLzIw/MjQvMDgvbGludXgx/MjAweDYyOC53ZWJw")
-        web.send(interaction.channelId, "Coucou")
-        web.send(interaction.channelId, EmbedManager.error("coucou"))
-        web.send(interaction.channelId, ComponentManager.success("Success"))
-        web.send(interaction.channelId, SelectMenuManager.users("user_select"))
-        web2.send(interaction.channelId, "Coucou")
-    } catch (e) {
-        console.log(e)
+    if (!(t.channel instanceof TextChannel)) {
+        await t.send("Thread test skipped : run the command in a text channel")
+        return
     }
+
+    await t.send("**Thread** : the same instance sends in a thread, then back in the channel")
+    const starter = await t.send("Starter message of the webhook thread")
+    const thread = await t.throttle(GuildManager.channel.thread.createFromMessage(starter, {
+        name: "UI test - webhook",
+        autoArchiveDuration: ThreadAutoArchiveDuration.OneHour,
+    }))
+    await t.sent("webhook.send(threadId)", web.send(thread.id, "webhook.send(threadId) : inside the thread"))
+    await t.sent("webhook.send(channelId) after a thread", web.send(t.channelId, "webhook.send(channelId) : back in the channel, with the same instance"))
+    await t.throttle(thread.setArchived(true, "UI test done"))
 }

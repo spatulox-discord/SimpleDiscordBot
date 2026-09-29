@@ -2,14 +2,15 @@ import dotenv from "dotenv";
 import {
     Bot,
     BotConfig,
+    Log,
     SimpleColor,
     Time,
 } from "../index";
 import {client} from "./client";
 import {Events} from "discord.js"
 import {randomActivityList} from "./randomActivityList";
-//import {component_test} from "./ui/component_test";
-import {chart_test} from "./ui/chart_test";
+import {runUiTests} from "./ui/runUiTests";
+import {handleUiTestInteraction, isUiTestInteraction} from "./ui/interactive_test";
 dotenv.config();
 
 async function main() {
@@ -31,11 +32,15 @@ async function main() {
     })
 
     bot.client.on(Events.InteractionCreate, async (interaction) => {
-        if(interaction.isChatInputCommand()){
-            console.log(interaction);
-            //webhook_test(interaction)
-            //component_test(interaction)
-            chart_test(interaction)
+        try {
+            // Any slash command runs the whole UI test suite in its channel
+            if (interaction.isChatInputCommand()) {
+                await runUiTests(interaction)
+            } else if (isUiTestInteraction(interaction)) {
+                await handleUiTestInteraction(interaction)
+            }
+        } catch (error) {
+            Log.error(`UI test interaction failed: ${error}`)
         }
     })
 

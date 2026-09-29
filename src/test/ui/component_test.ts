@@ -1,78 +1,69 @@
 import {
     Bot,
     SimpleColor,
-    GuildManager,
     SelectMenuManager,
     ButtonManager,
     ComponentManager,
     ComponentManagerField,
     ComponentManagerFileInput,
-    //SelectMenuCreateOption,
 } from "../../index";
 import fs from "fs/promises";
-import {ButtonBuilder, ChatInputCommandInteraction} from "discord.js";
+import {ButtonBuilder, SeparatorSpacingSize} from "discord.js";
+import {STATIC_PREFIX, UiTester} from "./UiTester";
 
-export async function component_test(interaction: ChatInputCommandInteraction) {
-    const channel = await GuildManager.channel.text.find("1162047096220827831")
-    const botIconUrl = Bot.client?.user?.displayAvatarURL({forceStatic: false, size: 128}) ?? ""
+export async function component_test(t: UiTester) {
+    const botIconUrl = Bot.client.user?.displayAvatarURL({forceStatic: false, size: 128}) ?? ""
 
-    interaction.reply(ComponentManager.toInteraction(ComponentManager.simple("Reply Simple")))
+    await t.send("**Presets**")
+    await t.send(ComponentManager.toMessage(ComponentManager.create()))
+    await t.send(ComponentManager.toMessage(ComponentManager.create({title: "create() with a title and SimpleColor.crimson", color: SimpleColor.crimson})))
+    await t.send(ComponentManager.toMessage(ComponentManager.create({title: "create() with a thumbnail", thumbnailUrl: botIconUrl})))
+    await t.send(ComponentManager.toMessage(ComponentManager.create({description: "create() with a description and a separator but no title", separator: SeparatorSpacingSize.Large})))
+    await t.send(ComponentManager.toMessage(ComponentManager.simple("simple()")))
+    await t.send(ComponentManager.toMessage(ComponentManager.success("success()")))
+    await t.send(ComponentManager.toMessage(ComponentManager.debug("debug()")))
+    await t.send(ComponentManager.toMessage(ComponentManager.error("error()"), null, false))
 
-    if (channel) {
-        /*await channel.send("--BASIC--")
-        await channel.send(ComponentManager.toMessage(ComponentManager.create()))
-        await channel.send(ComponentManager.toMessage(ComponentManager.create({title:null, color: SimpleColor.crimson})))
-        await channel.send(ComponentManager.toMessage(ComponentManager.create({title: "Pas null", color: SimpleColor.crimson, thumbnailUrl: botIconUrl})))
-        await channel.send(ComponentManager.toMessage(ComponentManager.simple("Desc simple")))
-        await channel.send(ComponentManager.toMessage(ComponentManager.success("Desc success")))
-        await channel.send(ComponentManager.toMessage(ComponentManager.debug("Desc debug")))
-        await channel.send(ComponentManager.toMessage(ComponentManager.error("Desc error")))
-        await Bot.log.info(ComponentManager.error("Bot log info component_error"))
-        await Bot.message.send(channel, ComponentManager.success("Bot message info component_error"))
+    await t.send("**Same container converted twice** : one footer each")
+    const twice = ComponentManager.simple("Converted twice with toMessage()")
+    await t.send(ComponentManager.toMessage(twice))
+    await t.send(ComponentManager.toMessage(twice))
 
-        await channel.send("--COMPLEX--")*/
+    await t.send("**Senders**")
+    await t.sent("Bot.message.send(channelId, content, container)", Bot.message.send(t.channelId, "Bot.message.send(channelId, content, container) : this content becomes a TextDisplay", ComponentManager.success("The container")))
+    await t.sent("Bot.message.send(channelId, [container, select menu])", Bot.message.send(t.channelId, [
+        ComponentManager.simple("Bot.message.send(channelId, [container, select menu])"),
+        SelectMenuManager.users(`${STATIC_PREFIX}component_users`),
+    ]))
+    await t.throttle(Bot.log.info(ComponentManager.debug("Bot.log.info(container)")))
 
-        const buttonLine: ButtonBuilder[] = [
-            ButtonManager.success({customId: "success_component_button_1"}),
-            ButtonManager.link({label: "Google", url: "https://google.com"}),
-            ButtonManager.danger({customId: "success_component_button_2"}),
-            ButtonManager.danger({customId: "success_component_button_3"}),
-            ButtonManager.danger({customId: "success_component_button_4"})
-        ]
+    await t.send("**Complex container**")
+    const buttonLine: ButtonBuilder[] = [
+        ButtonManager.success({customId: `${STATIC_PREFIX}component_line_1`}),
+        ButtonManager.link({label: "Google", url: "https://google.com"}),
+        ButtonManager.danger({customId: `${STATIC_PREFIX}component_line_2`, emoji: "🗑️"}),
+    ]
+    const fields: ComponentManagerField[] = [
+        {name: "Thumbnail", value: "Field with a thumbnail", thumbnailUrl: botIconUrl},
+        {name: "Button", value: "Field with a button accessory", button: ButtonManager.primary({customId: `${STATIC_PREFIX}component_accessory`})},
+        {button: ButtonManager.secondary({customId: `${STATIC_PREFIX}component_alone`, label: "Button alone"})},
+        {name: "Buttons", value: "Field with a line of buttons", button: buttonLine},
+        {value: "Value only, no separator after it", separator: false},
+    ]
+    const fileBuf = await fs.readFile("./handlers/commands/example.json")
+    const filesData: ComponentManagerFileInput[] = [
+        {buffer: fileBuf, name: "file1.json", spoiler: true},
+        {buffer: fileBuf, name: "file2.json"},
+    ]
 
-        const buttonLine2: ButtonBuilder[] = [
-            ButtonManager.success({customId: "success_component_button_1_2"}),
-            ButtonManager.link({label: "Google 2", url: "https://google.com"}),
-            ButtonManager.danger({customId: "success_component_button_2_2"}),
-        ]
+    const container = ComponentManager.create({title: "Complex one", color: SimpleColor.transparent, thumbnailUrl: botIconUrl})
+    ComponentManager.fields(container, fields)
+    ComponentManager.mediaGallery(container, [{url: botIconUrl}, {url: botIconUrl, spoiler: true}])
+    ComponentManager.selectMenu(container, SelectMenuManager.roles(`${STATIC_PREFIX}component_roles`))
+    const {files} = ComponentManager.file(container, filesData)
+    await t.send(ComponentManager.toMessage(container, files))
 
-        const fields: ComponentManagerField[] = [
-            {name: "Serveur", value: "Helldivers FR", thumbnailUrl: botIconUrl},
-            {name: "Membres", value: "1,234", button: ButtonManager.success({customId: "success_component_button"})},
-            {button: ButtonManager.success({customId: "success_component_button_2_3"})},
-            {name: "Buttons", value: "Button line", button: buttonLine},
-            {button: buttonLine2},
-        ];
-
-        /*const selectOption: SelectMenuCreateOption[] = [
-            {label: "Test", value: "Test"},
-            {label: "Test2", value: "Test2"},
-            {label: "Test3", value: "Test3"}
-        ]*/
-
-        const fileBuf = await fs.readFile("./handlers/commands/example.json")
-        const filesData: ComponentManagerFileInput[] = [
-            {buffer: fileBuf, name: "file1.json", spoiler: true},
-            {buffer: fileBuf, name: "file2.json"},
-        ]
-
-        const container = ComponentManager.create({title: "Complex one", color: SimpleColor.transparent, thumbnailUrl: botIconUrl})
-        ComponentManager.fields(container, fields)
-        ComponentManager.mediaGallery(container, [{url:botIconUrl}, {url:botIconUrl, spoiler: true}, {url:botIconUrl}])
-        ComponentManager.selectMenu(container, SelectMenuManager.users("users_select"))
-        //ComponentManager.selectMenu(container, SelectMenuManager.simple("any_select", selectOption))
-        const {files} = ComponentManager.file(container, filesData) // Since discord works really weird, we put files reference inside the container, but the buffed files can't be put right now (not really like that but it's a simple explanation)
-        await channel.send(ComponentManager.toMessage(container, files)) // Buffed files goes here
-        await channel.send("--END--")
-    }
+    await t.send("**toMessageUpdate()** : the next container is edited after the delay")
+    const message = await t.send(ComponentManager.toMessage(ComponentManager.simple("Before toMessageUpdate()")))
+    await t.throttle(message.edit(ComponentManager.toMessageUpdate(ComponentManager.success("Edited with toMessageUpdate()"))))
 }
