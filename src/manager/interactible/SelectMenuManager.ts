@@ -7,8 +7,9 @@ import {
     MentionableSelectMenuBuilder,
     ChannelSelectMenuBuilder,
     MessageActionRowComponentBuilder, ChannelType, MessageCreateOptions, MessageFlags,
-    InteractionReplyOptions, InteractionUpdateOptions, MessageEditOptions,
+    InteractionReplyOptions, MessageEditOptions,
 } from "discord.js";
+import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
 
 export type SelectMenuCreateOption = {
     label: string;
@@ -222,7 +223,7 @@ export class SelectMenuManager {
      */
     static toInteractionUpdate(
         menus: SelectMenuList | SelectMenuList[] | ActionRowBuilder<MessageActionRowComponentBuilder> | ActionRowBuilder<MessageActionRowComponentBuilder>[]
-    ): InteractionUpdateOptions {
+    ): InteractionUpdateOrEditOptions {
         return this.toMessageUpdate(menus);
     }
 

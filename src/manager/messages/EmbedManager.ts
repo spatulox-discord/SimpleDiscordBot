@@ -1,8 +1,9 @@
 import {
     EmbedBuilder, EmbedFooterData,
     InteractionDeferReplyOptions, InteractionReplyOptions, MessageCreateOptions,
-    MessageFlags, InteractionUpdateOptions, MessageEditOptions,
+    MessageFlags, MessageEditOptions,
 } from "discord.js";
+import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
 import { Bot } from '../../core/Bot';
 import {SimpleColor} from "../../constants/SimpleColor";
 
@@ -130,7 +131,7 @@ export class EmbedManager {
     /**
      * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies)
      */
-    static toInteractionUpdate(embed: EmbedBuilder): InteractionUpdateOptions {
+    static toInteractionUpdate(embed: EmbedBuilder): InteractionUpdateOrEditOptions {
         return this.toMessageUpdate(embed);
     }
 

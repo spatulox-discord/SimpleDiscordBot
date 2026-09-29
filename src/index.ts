@@ -39,5 +39,5 @@ export { SimpleColor } from "./constants/SimpleColor";
 // Other
 export type { BotConfig, RandomBotActivity } from './core/Bot';
 export type { ConfigLog } from './core/BotLog';
-export type { SendableComponent } from './manager/builder/SendableComponentBuilder';
+export type { SendableComponent, InteractionUpdateOrEditOptions } from './manager/builder/SendableComponentBuilder';
 export { SimpleDiscordBotInfo } from "./SimpleDiscordBotInfo";

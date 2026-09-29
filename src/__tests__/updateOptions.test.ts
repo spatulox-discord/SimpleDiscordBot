@@ -1,6 +1,6 @@
 import {describe, it} from "node:test";
 import assert from "node:assert/strict";
-import {ButtonInteraction, ChatInputCommandInteraction, Message, MessageFlags} from "discord.js";
+import {ButtonInteraction, ChatInputCommandInteraction, InteractionEditReplyOptions, InteractionUpdateOptions, Message, MessageFlags} from "discord.js";
 import {ButtonManager} from "../manager/interactible/ButtonManager";
 import {SelectMenuManager} from "../manager/interactible/SelectMenuManager";
 import {EmbedManager} from "../manager/messages/EmbedManager";
@@ -43,4 +43,10 @@ export async function typeCheckUpdateOptions(button: ButtonInteraction, command:
     await command.editReply(SelectMenuManager.toInteractionUpdate(SelectMenuManager.users("u")));
     await message.edit(ComponentManager.toMessageUpdate(container));
     await message.edit(EmbedManager.toMessageUpdate(EmbedManager.simple("x")));
+
+    // Usable where an InteractionEditReplyOptions or an InteractionUpdateOptions is explicitly expected
+    const edit: InteractionEditReplyOptions = ComponentManager.toInteractionUpdate(container);
+    const update: InteractionUpdateOptions = ComponentManager.toInteractionUpdate(container);
+    await command.editReply(edit);
+    await button.update(update);
 }

@@ -2,7 +2,7 @@ import {
     ActionRowBuilder,
     EmbedBuilder,
     InteractionReplyOptions,
-    InteractionUpdateOptions, MessageCreateOptions,
+    InteractionUpdateOptions, InteractionEditReplyOptions, MessageCreateOptions,
     MessageFlags,
     MessageActionRowComponentBuilder, ContainerBuilder, TextDisplayBuilder, BaseSelectMenuBuilder
 } from "discord.js";
@@ -17,6 +17,11 @@ type MessageFields = {
 };
 
 export type SendableComponent = EmbedBuilder | ContainerBuilder | BaseSelectMenuBuilder<any> | ActionRowBuilder<MessageActionRowComponentBuilder>;
+
+/**
+ * Options accepted by both interaction.update() and interaction.editReply(), returned by the toInteractionUpdate() helpers
+ */
+export type InteractionUpdateOrEditOptions = InteractionUpdateOptions & InteractionEditReplyOptions;
 
 /** @internal */
 export class SendableComponentBuilder {

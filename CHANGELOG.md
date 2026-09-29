@@ -15,7 +15,7 @@ Date format : dd/mm/yyyy
   - `Bot.interaction.*` accept a plain string and arrays of components, `Bot.interaction.defer(interaction, ephemeral)`
   - `Bot.message.send/sendDM`, `Bot.log.*` and `WebhookManager.send` accept arrays of components
   - `ComponentManager.toInteraction(container, file, footer, ephemeral)`
-  - `toInteractionUpdate()` on `EmbedManager`, `ComponentManager`, `ButtonManager` and `SelectMenuManager`, for `interaction.update()` and `interaction.editReply()`
+  - `toInteractionUpdate()` on `EmbedManager`, `ComponentManager`, `ButtonManager` and `SelectMenuManager`, for `interaction.update()` and `interaction.editReply()` : it returns `InteractionUpdateOrEditOptions` (`InteractionUpdateOptions & InteractionEditReplyOptions`, exported)
   - `toMessageUpdate()` on the same managers, for `message.edit()`
   - `ModalManager.date()` / `number()` / `phone()` take a `suffix` parameter (default `true`) : `false` keeps the given customId for the modal instead of suffixing it with `_date` / `_number` / `_phone_number`, the input is then `${customId}_input`
   - `SelectMenuManager.option()` is public : builds one option or an array of options

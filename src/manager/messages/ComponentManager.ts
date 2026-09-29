@@ -12,8 +12,9 @@ import {
     ButtonBuilder,
     AttachmentBuilder,
     FileBuilder,
-    ActionRowBuilder, InteractionReplyOptions, InteractionUpdateOptions, MessageEditOptions,
+    ActionRowBuilder, InteractionReplyOptions, MessageEditOptions,
 } from "discord.js";
+import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
 import { Bot } from '../../core/Bot';
 import {SelectMenuList, SelectMenuManager} from "../interactible/SelectMenuManager";
 import {SimpleColor} from "../../constants/SimpleColor";
@@ -376,7 +377,7 @@ export class ComponentManager {
         container: ContainerBuilder,
         file: AttachmentBuilder | AttachmentBuilder[] | null = null,
         footer: boolean = true
-    ): InteractionUpdateOptions {
+    ): InteractionUpdateOrEditOptions {
         return this.toMessageUpdate(container, file, footer);
     }
 }
