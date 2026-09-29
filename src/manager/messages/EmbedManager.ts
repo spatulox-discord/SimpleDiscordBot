@@ -3,7 +3,7 @@ import {
     InteractionDeferReplyOptions, InteractionReplyOptions, MessageCreateOptions,
     MessageFlags,
 } from "discord.js";
-import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
+import type {UpdateOptions} from "../builder/SendableComponentBuilder";
 import { Bot } from '../../core/Bot';
 import {SimpleColor} from "../../constants/SimpleColor";
 
@@ -122,7 +122,7 @@ export class EmbedManager {
     /**
      * Options to edit an existing message : message.edit()
      */
-    static toMessageUpdate(embed: EmbedBuilder): InteractionUpdateOrEditOptions {
+    static toMessageUpdate(embed: EmbedBuilder): UpdateOptions {
         return {
             embeds: [embed]
         };
@@ -131,7 +131,7 @@ export class EmbedManager {
     /**
      * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies)
      */
-    static toInteractionUpdate(embed: EmbedBuilder): InteractionUpdateOrEditOptions {
+    static toInteractionUpdate(embed: EmbedBuilder): UpdateOptions {
         return this.toMessageUpdate(embed);
     }
 

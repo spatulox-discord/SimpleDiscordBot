@@ -22,7 +22,7 @@ export type SendableComponent = EmbedBuilder | ContainerBuilder | BaseSelectMenu
  * Options accepted by interaction.update(), interaction.editReply() and message.edit(),
  * returned by every toXXXUpdate() helper (toInteractionUpdate(), toMessageUpdate())
  */
-export type InteractionUpdateOrEditOptions = InteractionUpdateOptions & InteractionEditReplyOptions & MessageEditOptions;
+export type UpdateOptions = InteractionUpdateOptions & InteractionEditReplyOptions & MessageEditOptions;
 
 /** @internal */
 export class SendableComponentBuilder {

@@ -33,7 +33,7 @@ describe("toMessageUpdate / toInteractionUpdate", () => {
 /**
  * Never called : only type checked by `npm run type-check`, to make sure the options fit every discord.js method
  * they are documented for (toInteractionUpdate() replaced toInteractionEdit(), so it must work with editReply() too,
- * and every toXXXUpdate() returns InteractionUpdateOrEditOptions, accepted by update(), editReply() and message.edit())
+ * and every toXXXUpdate() returns UpdateOptions, accepted by update(), editReply() and message.edit())
  */
 export async function typeCheckUpdateOptions(button: ButtonInteraction, command: ChatInputCommandInteraction, message: Message) {
     const container = ComponentManager.simple("x");
@@ -51,7 +51,7 @@ export async function typeCheckUpdateOptions(button: ButtonInteraction, command:
     await command.editReply(edit);
     await button.update(update);
 
-    // Every toXXXUpdate() returns InteractionUpdateOrEditOptions : they are interchangeable
+    // Every toXXXUpdate() returns UpdateOptions : they are interchangeable
     const messageEdit: MessageEditOptions = ButtonManager.toInteractionUpdate(ButtonManager.primary({customId: "a"}));
     await message.edit(messageEdit);
     await message.edit(SelectMenuManager.toInteractionUpdate(SelectMenuManager.users("u")));

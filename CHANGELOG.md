@@ -17,7 +17,7 @@ Date format : dd/mm/yyyy
   - `ComponentManager.toInteraction(container, file, footer, ephemeral)`
   - `toInteractionUpdate()` on `EmbedManager`, `ComponentManager`, `ButtonManager` and `SelectMenuManager`, for `interaction.update()` and `interaction.editReply()`
   - `toMessageUpdate()` on the same managers, for `message.edit()`
-  - Every `toXXXUpdate()` (`toInteractionUpdate()`, `toMessageUpdate()`) returns the exported `InteractionUpdateOrEditOptions` type (`InteractionUpdateOptions & InteractionEditReplyOptions & MessageEditOptions`) : the result fits `interaction.update()`, `interaction.editReply()` and `message.edit()`
+  - Every `toXXXUpdate()` (`toInteractionUpdate()`, `toMessageUpdate()`) returns the exported `UpdateOptions` type (`InteractionUpdateOptions & InteractionEditReplyOptions & MessageEditOptions`) : the result fits `interaction.update()`, `interaction.editReply()` and `message.edit()`
   - `ModalManager.date()` / `number()` / `phone()` take a `suffix` parameter (default `true`) : `false` keeps the given customId for the modal instead of suffixing it with `_date` / `_number` / `_phone_number`, the input is then `${customId}_input`
   - `SelectMenuManager.option()` is public : builds one option or an array of options
   - `ModalField.customId`, `InviteManager.find(code)`, `InviteManager.delete(code)`, `InviteManager.isOld()` / `InviteManager.cleanup()`, `Bot.stopRandomActivity()`, `bot.started`

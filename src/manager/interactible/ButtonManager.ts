@@ -3,7 +3,7 @@ import {
     ButtonStyle,
     ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, MessageFlags,
 } from "discord.js";
-import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
+import type {UpdateOptions} from "../builder/SendableComponentBuilder";
 
 export interface ButtonOptions {
     label?: string;
@@ -91,7 +91,7 @@ export class ButtonManager {
     /**
      * Options to edit an existing message : message.edit()
      */
-    static toMessageUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionUpdateOrEditOptions {
+    static toMessageUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): UpdateOptions {
         return {
             components: this.createRowsToReturn(button)
         };
@@ -100,7 +100,7 @@ export class ButtonManager {
     /**
      * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies)
      */
-    static toInteractionUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionUpdateOrEditOptions {
+    static toInteractionUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): UpdateOptions {
         return this.toMessageUpdate(button);
     }
 

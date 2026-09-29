@@ -14,7 +14,7 @@ import {
     FileBuilder,
     ActionRowBuilder, InteractionReplyOptions,
 } from "discord.js";
-import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
+import type {UpdateOptions} from "../builder/SendableComponentBuilder";
 import { Bot } from '../../core/Bot';
 import {SelectMenuList, SelectMenuManager} from "../interactible/SelectMenuManager";
 import {SimpleColor} from "../../constants/SimpleColor";
@@ -350,12 +350,12 @@ export class ComponentManager {
         container: ContainerBuilder,
         file: AttachmentBuilder | AttachmentBuilder[] | null = null,
         footer: boolean = true
-    ): InteractionUpdateOrEditOptions {
+    ): UpdateOptions {
         if(footer){
             container = this.footer(container);
         }
         // The flag is required to turn a deferred reply (or a legacy message) into a Components V2 one
-        const base: InteractionUpdateOrEditOptions = {
+        const base: UpdateOptions = {
             components: [container],
             flags: [MessageFlags.IsComponentsV2]
         };
@@ -377,7 +377,7 @@ export class ComponentManager {
         container: ContainerBuilder,
         file: AttachmentBuilder | AttachmentBuilder[] | null = null,
         footer: boolean = true
-    ): InteractionUpdateOrEditOptions {
+    ): UpdateOptions {
         return this.toMessageUpdate(container, file, footer);
     }
 }
