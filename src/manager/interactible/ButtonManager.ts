@@ -1,8 +1,9 @@
 import {
     ButtonBuilder,
     ButtonStyle,
-    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, InteractionEditReplyOptions, MessageFlags, InteractionUpdateOptions,
+    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, MessageFlags,
 } from "discord.js";
+import type {UpdateOptions} from "../builder/SendableComponentBuilder";
 
 export interface ButtonOptions {
     label?: string;
@@ -10,6 +11,9 @@ export interface ButtonOptions {
     customId: string;
     disabled?: boolean;
 }
+
+/** One button, one row, or an array mixing buttons and rows (consecutive buttons are grouped by 5 per row) */
+export type ButtonInput = ButtonBuilder | ActionRowBuilder<ButtonBuilder> | (ButtonBuilder | ActionRowBuilder<ButtonBuilder>)[];
 
 export class ButtonManager {
 
@@ -74,37 +78,40 @@ export class ButtonManager {
             .addComponents(buttons);
     }
 
-    static toMessage(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): MessageCreateOptions {
+    static toMessage(button: ButtonInput): MessageCreateOptions {
         return {
             components: this.createRowsToReturn(button),
         }
     }
 
-    static toInteraction(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[], ephemeral: boolean = false): InteractionReplyOptions {
+    static toInteraction(button: ButtonInput, ephemeral: boolean = false): InteractionReplyOptions {
         return {
             components: this.createRowsToReturn(button),
             flags: ephemeral ? [MessageFlags.Ephemeral] : []
         };
     }
 
-    static toInteractionEdit(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionEditReplyOptions {
+    /**
+     * Options to edit an existing message : message.edit()
+     */
+    static toMessageUpdate(button: ButtonInput): UpdateOptions {
         return {
             components: this.createRowsToReturn(button)
         };
     }
 
     /**
-     * Same as toInteractionEdit(), typed for interaction.update() : buttons, select menus and modals opened from a message
+     * Options for interaction.update() and interaction.editReply() (buttons, select menus, modals, deferred replies)
      */
-    static toInteractionUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionUpdateOptions {
-        return this.toInteractionEdit(button);
+    static toInteractionUpdate(button: ButtonInput): UpdateOptions {
+        return this.toMessageUpdate(button);
     }
 
     /**
      * Consecutive buttons are grouped by 5 in the same row (like row() does), action rows are kept as is
      */
-    private static createRowsToReturn(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): ActionRowBuilder<ButtonBuilder>[]{
-        const items: (ButtonBuilder | ActionRowBuilder<ButtonBuilder>)[] = Array.isArray(button) ? button : [button];
+    private static createRowsToReturn(button: ButtonInput): ActionRowBuilder<ButtonBuilder>[]{
+        const items = Array.isArray(button) ? button : [button];
         const rows: ActionRowBuilder<ButtonBuilder>[] = [];
         let pending: ButtonBuilder[] = [];
 

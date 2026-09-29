@@ -4,7 +4,8 @@ Date format : dd/mm/yyyy
 ### Unreleased (contains breaking changes : next major)
 - Breaking :
   - `GuildManager.searchMember()`, `GuildManager.isMemberInGuild()` and `GuildUserManager.isInVoice()` now take `(guildId, memberId)` like every other member method
-  - `ButtonManager.toMessage/toInteraction/toInteractionEdit([...buttons])` group the buttons by 5 per row instead of one row per button
+  - `toInteractionEdit()` is removed from `EmbedManager`, `ComponentManager`, `ButtonManager` and `SelectMenuManager` : use `toInteractionUpdate()`, same parameters, it works with `interaction.editReply()` and `interaction.update()`
+  - `ButtonManager.toMessage/toInteraction/toInteractionUpdate([...buttons])` group the buttons by 5 per row instead of one row per button
   - `GuildManager.channel.text.find()` / `voice.find()` only return a `TextChannel` / `VoiceChannel`
   - `GuildChannelManager.delete()` returns `false` on failure instead of throwing
   - `DISCORD_BOT_DEV=false` (or `0`, `no`, `off`, empty) no longer enables the dev mode
@@ -14,14 +15,16 @@ Date format : dd/mm/yyyy
   - `Bot.interaction.*` accept a plain string and arrays of components, `Bot.interaction.defer(interaction, ephemeral)`
   - `Bot.message.send/sendDM`, `Bot.log.*` and `WebhookManager.send` accept arrays of components
   - `ComponentManager.toInteraction(container, file, footer, ephemeral)`
-  - `toInteractionUpdate()` on `EmbedManager`, `ComponentManager`, `ButtonManager` and `SelectMenuManager`, for `interaction.update()` (same output as `toInteractionEdit()`)
+  - `toInteractionUpdate()` on `EmbedManager`, `ComponentManager`, `ButtonManager` and `SelectMenuManager`, for `interaction.update()` and `interaction.editReply()`
+  - `toMessageUpdate()` on the same managers, for `message.edit()`
+  - Every `toXXXUpdate()` (`toInteractionUpdate()`, `toMessageUpdate()`) returns the exported `UpdateOptions` type (`InteractionUpdateOptions & InteractionEditReplyOptions & MessageEditOptions`) : the result fits `interaction.update()`, `interaction.editReply()` and `message.edit()`
   - `ModalManager.date()` / `number()` / `phone()` take a `suffix` parameter (default `true`) : `false` keeps the given customId for the modal instead of suffixing it with `_date` / `_number` / `_phone_number`, the input is then `${customId}_input`
   - `SelectMenuManager.option()` is public : builds one option or an array of options
   - `ModalField.customId`, `InviteManager.find(code)`, `InviteManager.delete(code)`, `InviteManager.isOld()` / `InviteManager.cleanup()`, `Bot.stopRandomActivity()`, `bot.started`
   - `DiscordRegex.SNOWFLAKE` / `DiscordRegex.DISCORD_URL`, `SendableComponent` / `ConfigLog` types are exported
   - Unit tests (`npm test`), run by `npm run build`
 - Fix :
-  - Components V2 : the flag was missing on interactions, arrays and `toInteractionEdit()`, content + container was rejected by Discord (the content now becomes a TextDisplay)
+  - Components V2 : the flag was missing on interactions, arrays and edits, content + container was rejected by Discord (the content now becomes a TextDisplay)
   - `GuildUserManager.timeout()` passed a timestamp instead of a duration
   - `RoleManager.toggle()` could never add a role, roles whose name is 18 characters long couldn't be found
   - `WebhookManager` reused the first channel's webhook for every channel
@@ -33,6 +36,7 @@ Date format : dd/mm/yyyy
   - `SimpleColor.black` as `defaultSimpleColor`, crashes when using `EmbedManager` / `Bot.log` before the Bot is instantiated
   - `Bot.message.success/error` printed the message twice, `Bot.message.send(channelId)` only looked in the cache
   - `ModalManager.titleDescription()` ignored prefilled values, `parseDate()` accepted `31/02`
+  - `ButtonManager.toMessage()` & co refused an array mixing rows and buttons at the type level (it already worked at runtime) : they take the exported `ButtonInput` type
   - `DiscordRegex` : 17 to 20 digits ids, invites, `isDiscordUrl()`, usernames with dots, every unicode emoji
   - `ReactionManager.remove()` with custom emojis, DMs support
   - `GuildUserManager.rename()` retried on permission errors, error logs of `mute()` and member lookups

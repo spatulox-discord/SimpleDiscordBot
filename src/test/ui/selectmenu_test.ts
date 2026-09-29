@@ -1,52 +1,40 @@
-import {GuildManager} from "../../manager/guild/GuildManager";
-//import {Bot} from "../../core/Bot";
-import {SelectMenuCreateOption, SelectMenuManager} from "../../manager/interactible/SelectMenuManager";
-import {ChatInputCommandInteraction} from "discord.js";
-import {Bot} from "../../core/Bot";
+import {Bot, SelectMenuCreateOption, SelectMenuManager} from "../../index";
+import {STATIC_PREFIX, UiTester} from "./UiTester";
 
-export async function selectmenu_test(interaction: ChatInputCommandInteraction) {
-    const channel = await GuildManager.channel.text.find("1162047096220827831")
+const id = (name: string) => `${STATIC_PREFIX}select_${name}`
 
-    interaction.reply(SelectMenuManager.toInteraction(SelectMenuManager.users("users_menu_interaction")))
-    if (channel) {
-        await channel.send("--PRE-BUILT--")
-        await channel.send(SelectMenuManager.toMessage(SelectMenuManager.users("user_menu")))
-        await channel.send(SelectMenuManager.toMessage(SelectMenuManager.roles("user_menu")))
-        await channel.send(SelectMenuManager.toMessage(SelectMenuManager.mentionables("user_menu")))
-        await channel.send(SelectMenuManager.toMessage(SelectMenuManager.channels("user_menu")))
-        await Bot.log.info(SelectMenuManager.row(SelectMenuManager.channels("user_menu")))
-        await Bot.message.send(channel, SelectMenuManager.row(SelectMenuManager.channels("user_menu")))
+export async function selectmenu_test(t: UiTester) {
+    await t.send("**Pre-built**")
+    await t.send(SelectMenuManager.toMessage(SelectMenuManager.users(id("users"))))
+    await t.send(SelectMenuManager.toMessage(SelectMenuManager.roles(id("roles"))))
+    await t.send(SelectMenuManager.toMessage(SelectMenuManager.mentionables(id("mentionables"))))
+    await t.send(SelectMenuManager.toMessage(SelectMenuManager.channels(id("channels"))))
 
-        await channel.send("--COMPLEX--")
+    await t.send("**String select**")
+    const selection: SelectMenuCreateOption[] = [
+        {label: "Guild", value: "guild", description: "With a description", emoji: "👀"},
+        {label: "Other guild", value: "other_guild"},
+    ]
+    await t.send(SelectMenuManager.toMessage(SelectMenuManager.simple(id("simple"), selection)))
 
-        const selection: SelectMenuCreateOption[] = [
-            {label: "Guild", value: "guild", description: "GUILD", emoji: "👀"},
-            {label: "Guild1", value: "fakeguild",},
-        ]
+    // create() + the public option() helper, with a single option then an array
+    const menu = SelectMenuManager.create(id("option"), "create() + option()")
+    menu.addOptions(SelectMenuManager.option({label: "Single option()", value: "single"}))
+    menu.addOptions(SelectMenuManager.option([
+        {label: "option([...]) 1", value: "array_1", emoji: "1️⃣"},
+        {label: "option([...]) 2", value: "array_2", emoji: "2️⃣"},
+    ]))
+    await t.send(SelectMenuManager.toMessage(SelectMenuManager.minMax(menu, 1, 2)))
 
-        const lotOfSelection: SelectMenuCreateOption[] = [
-            {label: "Guild", value: "guild", description: "GUILD", emoji: "👀"},
-            {label: "Guild1", value: "fakeguild",},
-            {label: "Guild2", value: "fakeguild1",},
-            {label: "Guild3", value: "fakeguild2",},
-            {label: "Guild5", value: "fakeguild3",},
-            {label: "Guild5", value: "fakeguild4",},
-            {label: "Guild6", value: "fakeguild5",},
-            {label: "Guild7", value: "fakeguild6",},
-            {label: "Guild8", value: "fakeguild7",},
-            {label: "Guild9", value: "fakeguild8",},
-            {label: "Guild10", value: "fakeguild9",},
-            {label: "Guild11", value: "fakeguild10",},
-            {label: "Guild12", value: "fakeguild11",},
-        ]
+    const lotOfSelection: SelectMenuCreateOption[] = Array.from({length: 13}, (_, i) => ({label: `Option ${i + 1}`, value: `option_${i}`}))
+    await t.send("**paginated()** : 13 options, 5 per menu → 3 menus")
+    await t.send(SelectMenuManager.toMessage(SelectMenuManager.paginated(id("paginated"), lotOfSelection, 5)))
 
-        await channel.send(SelectMenuManager.toMessage(SelectMenuManager.simple("simple_menu", selection)))
-        await Bot.log.info(SelectMenuManager.simple("simple_menu", selection))
-        await Bot.message.send(channel, SelectMenuManager.simple("simple_menu", selection))
-        await Bot.log.info(SelectMenuManager.mentionables("simple_menu"))
-        await Bot.message.send(channel, SelectMenuManager.channels("simple_menu"))
-
-        await channel.send(SelectMenuManager.toMessage(SelectMenuManager.simple("simple_menu", selection)))
-        await channel.send(SelectMenuManager.toMessage(SelectMenuManager.paginated("simple_menu_paginated", lotOfSelection, 5)))
-    }
+    await t.send("**Senders**")
+    await t.sent("Bot.message.send(channelId, select)", Bot.message.send(t.channelId, SelectMenuManager.simple(id("sender"), selection)))
+    await t.sent("Bot.message.send(channelId, [select, select])", Bot.message.send(t.channelId, "Bot.message.send(channelId, content, [users, channels])", [
+        SelectMenuManager.users(id("sender_users")),
+        SelectMenuManager.channels(id("sender_channels")),
+    ]))
+    await t.throttle(Bot.log.info(SelectMenuManager.mentionables(id("log"))))
 }

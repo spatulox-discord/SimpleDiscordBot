@@ -11,6 +11,11 @@ describe("ButtonManager.toMessage", () => {
         assert.deepEqual(rowSizes(ButtonManager.toMessage(buttons(7)).components as unknown[]), [5, 2]);
     });
 
+    it("accepts an array mixing rows and buttons", () => {
+        const components = ButtonManager.toMessage([ButtonManager.row(buttons(2)), ...buttons(1)]).components as unknown[];
+        assert.deepEqual(rowSizes(components), [2, 1]);
+    });
+
     it("keeps action rows as is", () => {
         const components = ButtonManager.toMessage([ButtonManager.row(buttons(2)), ButtonManager.row(buttons(1))]).components as unknown[];
         assert.deepEqual(rowSizes(components), [2, 1]);

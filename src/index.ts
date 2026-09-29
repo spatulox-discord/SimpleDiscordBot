@@ -23,7 +23,7 @@ export type { ComponentManagerCreate, ComponentManagerField, ComponentManagerFil
 export { ChartManager } from "./manager/messages/ChartManager";
 export type { ProgressBarOptions, ProgressBarRow, SparklineOptions, SparklinesOptions, SparklineRow } from "./manager/messages/ChartManager";
 export { ButtonManager } from "./manager/interactible/ButtonManager";
-export type { ButtonOptions } from "./manager/interactible/ButtonManager";
+export type { ButtonOptions, ButtonInput } from "./manager/interactible/ButtonManager";
 export { PaginationManager } from "./manager/interactible/PaginationManager";
 export type { PaginationPage, PaginationOptions } from "./manager/interactible/PaginationManager";
 
@@ -39,5 +39,5 @@ export { SimpleColor } from "./constants/SimpleColor";
 // Other
 export type { BotConfig, RandomBotActivity } from './core/Bot';
 export type { ConfigLog } from './core/BotLog';
-export type { SendableComponent } from './manager/builder/SendableComponentBuilder';
+export type { SendableComponent, UpdateOptions } from './manager/builder/SendableComponentBuilder';
 export { SimpleDiscordBotInfo } from "./SimpleDiscordBotInfo";
