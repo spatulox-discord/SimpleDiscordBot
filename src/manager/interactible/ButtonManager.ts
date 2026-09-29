@@ -1,7 +1,7 @@
 import {
     ButtonBuilder,
     ButtonStyle,
-    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, MessageFlags, MessageEditOptions,
+    ActionRowBuilder, MessageCreateOptions, InteractionReplyOptions, MessageFlags,
 } from "discord.js";
 import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
 
@@ -91,7 +91,7 @@ export class ButtonManager {
     /**
      * Options to edit an existing message : message.edit()
      */
-    static toMessageUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): MessageEditOptions {
+    static toMessageUpdate(button: ButtonBuilder | ButtonBuilder[] | ActionRowBuilder<ButtonBuilder> | ActionRowBuilder<ButtonBuilder>[]): InteractionUpdateOrEditOptions {
         return {
             components: this.createRowsToReturn(button)
         };

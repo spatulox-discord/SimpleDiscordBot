@@ -1,6 +1,6 @@
 import {describe, it} from "node:test";
 import assert from "node:assert/strict";
-import {ButtonInteraction, ChatInputCommandInteraction, InteractionEditReplyOptions, InteractionUpdateOptions, Message, MessageFlags} from "discord.js";
+import {ButtonInteraction, ChatInputCommandInteraction, InteractionEditReplyOptions, InteractionUpdateOptions, Message, MessageEditOptions, MessageFlags} from "discord.js";
 import {ButtonManager} from "../manager/interactible/ButtonManager";
 import {SelectMenuManager} from "../manager/interactible/SelectMenuManager";
 import {EmbedManager} from "../manager/messages/EmbedManager";
@@ -32,7 +32,8 @@ describe("toMessageUpdate / toInteractionUpdate", () => {
 
 /**
  * Never called : only type checked by `npm run type-check`, to make sure the options fit every discord.js method
- * they are documented for (toInteractionUpdate() replaced toInteractionEdit(), so it must work with editReply() too)
+ * they are documented for (toInteractionUpdate() replaced toInteractionEdit(), so it must work with editReply() too,
+ * and every toXXXUpdate() returns InteractionUpdateOrEditOptions, accepted by update(), editReply() and message.edit())
  */
 export async function typeCheckUpdateOptions(button: ButtonInteraction, command: ChatInputCommandInteraction, message: Message) {
     const container = ComponentManager.simple("x");
@@ -49,4 +50,11 @@ export async function typeCheckUpdateOptions(button: ButtonInteraction, command:
     const update: InteractionUpdateOptions = ComponentManager.toInteractionUpdate(container);
     await command.editReply(edit);
     await button.update(update);
+
+    // Every toXXXUpdate() returns InteractionUpdateOrEditOptions : they are interchangeable
+    const messageEdit: MessageEditOptions = ButtonManager.toInteractionUpdate(ButtonManager.primary({customId: "a"}));
+    await message.edit(messageEdit);
+    await message.edit(SelectMenuManager.toInteractionUpdate(SelectMenuManager.users("u")));
+    await command.editReply(ComponentManager.toMessageUpdate(container));
+    await button.update(EmbedManager.toMessageUpdate(EmbedManager.simple("x")));
 }

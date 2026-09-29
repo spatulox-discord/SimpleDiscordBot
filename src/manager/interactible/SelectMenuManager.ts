@@ -7,7 +7,7 @@ import {
     MentionableSelectMenuBuilder,
     ChannelSelectMenuBuilder,
     MessageActionRowComponentBuilder, ChannelType, MessageCreateOptions, MessageFlags,
-    InteractionReplyOptions, MessageEditOptions,
+    InteractionReplyOptions,
 } from "discord.js";
 import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
 
@@ -212,7 +212,7 @@ export class SelectMenuManager {
      */
     static toMessageUpdate(
         menus: SelectMenuList | SelectMenuList[] | ActionRowBuilder<MessageActionRowComponentBuilder> | ActionRowBuilder<MessageActionRowComponentBuilder>[]
-    ): MessageEditOptions {
+    ): InteractionUpdateOrEditOptions {
         return {
             components: this._createRowsToReturn(menus)
         };

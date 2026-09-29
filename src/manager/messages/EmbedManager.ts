@@ -1,7 +1,7 @@
 import {
     EmbedBuilder, EmbedFooterData,
     InteractionDeferReplyOptions, InteractionReplyOptions, MessageCreateOptions,
-    MessageFlags, MessageEditOptions,
+    MessageFlags,
 } from "discord.js";
 import type {InteractionUpdateOrEditOptions} from "../builder/SendableComponentBuilder";
 import { Bot } from '../../core/Bot';
@@ -122,7 +122,7 @@ export class EmbedManager {
     /**
      * Options to edit an existing message : message.edit()
      */
-    static toMessageUpdate(embed: EmbedBuilder): MessageEditOptions {
+    static toMessageUpdate(embed: EmbedBuilder): InteractionUpdateOrEditOptions {
         return {
             embeds: [embed]
         };
