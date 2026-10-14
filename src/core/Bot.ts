@@ -12,7 +12,6 @@ import {SimpleDiscordBotInfo} from "../SimpleDiscordBotInfo";
 
 export type BotConfig = {
     defaultSimpleColor?: number | SimpleColor;
-    botName?: string
     log?: ConfigLog
 }
 
@@ -29,13 +28,16 @@ export class Bot {
     private static _client: Client;
     private static token: string;
     private static _config: BotConfig;
+    private static _botName: string = "";
     private static randomActivityInterval: NodeJS.Timeout | null = null;
 
     get config(): BotConfig { return Bot._config; }
     get client(): Client { return Bot._client; }
+    get botName(): string { return Bot._botName; }
 
     static get client(): Client { return Bot._client; }
     static get config(): BotConfig { return Bot._config; }
+    static get botName(): string { return Bot._botName; }
 
     /**
      * Resolves once the login is done (true) or has definitively failed (false)
@@ -54,6 +56,8 @@ export class Bot {
         // Registered before login() so the event can't be missed, and only once even if login() is called again
         Bot._client.once(Events.ClientReady, async () => {
             if (Bot._client.user) {
+                // Filled before the first log so the "Bot Started" embed already has its footer
+                Bot._botName = Bot._client.user.displayName;
                 await Bot.log.initDiscordLogging()
                 Log.info(`Connected on ${Bot._client.guilds.cache.size} servers as ${Bot._client.user.tag}`);
                 Bot.log.info(EmbedManager.description("Bot Started"))

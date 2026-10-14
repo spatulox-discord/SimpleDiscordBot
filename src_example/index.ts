@@ -7,7 +7,6 @@ async function main() {
 
     const config: BotConfig = {
         defaultSimpleColor: SimpleColor.blue, // (When embed are created with EmbedManager)
-        botName: "Simple Discord Bot", // The name of the bot
         log: {
             info: {channelId: "YOUR_LOG_CHANNEL_ID", console: true, discord: true},
             error: {channelId: "YOUR_LOG_CHANNEL_ID", console: true, discord: true},

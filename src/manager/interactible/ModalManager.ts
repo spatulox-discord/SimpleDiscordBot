@@ -102,7 +102,7 @@ export class ModalManager {
         modalTitle: string | null,
         field: ModalField
     ): ModalBuilder {
-        const modal = this.create(modalTitle ?? Bot.config?.botName ?? "Bot", customId);
+        const modal = this.create(modalTitle ?? (Bot.botName || "Bot"), customId);
         const opt: InternalModalField = {
             ...field,
             customId: field.customId ?? `${customId}_input`,

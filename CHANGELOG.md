@@ -1,7 +1,12 @@
 # Changelog
 Date format : dd/mm/yyyy
 
-### 14/10/2026 - Unreleased
+### 14/10/2026 - 5.0.0
+- Breaking :
+  - `BotConfig.botName` is removed : the bot name is read from the Discord account (`client.user.displayName`) once the client is ready. Remove `botName` from your config
+- Add :
+  - `Bot.botName` (read-only, `""` before the client is ready)
+  - The embed footer (bot name + icon) is always set once the client is ready, not only when `botName` was configured
 - Fix :
   - `Bot.log` no longer fetches the log channels whose `discord` field is `false`
 

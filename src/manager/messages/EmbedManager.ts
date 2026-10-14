@@ -29,9 +29,10 @@ export class EmbedManager {
             embed.setColor(colorC)
         }
 
-        if (Bot.config?.botName) {
+        // Empty until the client is ready, and discord.js rejects an empty footer text
+        if (Bot.botName) {
             const footer: EmbedFooterData = {
-                text: Bot.config.botName
+                text: Bot.botName
             };
 
             if (this.BOT_ICON) {

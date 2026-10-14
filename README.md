@@ -57,7 +57,6 @@ const client = new Client({
 
 const config: BotConfig = {
     defaultSimpleColor: SimpleColor.blue,
-    botName: "Simple Discord Bot",
     log: {
         info: {channelId: "YOUR_LOG_CHANNEL_ID", console: true, discord: true},
         error: {channelId: "YOUR_LOG_CHANNEL_ID", console: true, discord: true},

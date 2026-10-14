@@ -292,7 +292,7 @@ export class ComponentManager {
     private static footer(container: ContainerBuilder): ContainerBuilder {
         return new ContainerBuilder(container.toJSON()).addTextDisplayComponents(
             new TextDisplayBuilder()
-                .setContent(`-# **${Bot.config?.botName || "Bot"} · <t:${Math.floor(Date.now() / 1000)}:d> <t:${Math.floor(Date.now() / 1000)}:t>**`)
+                .setContent(`-# **${Bot.botName || "Bot"} · <t:${Math.floor(Date.now() / 1000)}:d> <t:${Math.floor(Date.now() / 1000)}:t>**`)
         );
     }
 
