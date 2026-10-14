@@ -13,6 +13,10 @@ import {SimpleDiscordBotInfo} from "../SimpleDiscordBotInfo";
 export type BotConfig = {
     defaultSimpleColor?: number | SimpleColor;
     log?: ConfigLog
+    /**
+     * Log the unhandled promise rejections of the whole process with Bot.log.error instead of crashing (default false)
+     */
+    catchUnhandledRejections?: boolean
 }
 
 export type RandomBotActivity = {type: ActivityType, message: string}[]
@@ -30,6 +34,7 @@ export class Bot {
     private static _config: BotConfig;
     private static _botName: string = "";
     private static randomActivityInterval: NodeJS.Timeout | null = null;
+    private static unhandledRejectionListening = false;
 
     get config(): BotConfig { return Bot._config; }
     get client(): Client { return Bot._client; }
@@ -63,6 +68,19 @@ export class Bot {
                 Bot.log.info(EmbedManager.description("Bot Started"))
             }
         });
+
+        // Without a listener, an "error" event emitted by the client crashes the process
+        Bot._client.on(Events.Error, (error) => {
+            Bot.log.error(`Discord client error : ${Bot.formatError(error)}`)
+        })
+
+        // Process-wide, so opt-in and registered only once even if several Bot are created
+        if (config.catchUnhandledRejections && !Bot.unhandledRejectionListening) {
+            Bot.unhandledRejectionListening = true
+            process.on("unhandledRejection", (reason) => {
+                Bot.log.error(`Unhandled rejection : ${Bot.formatError(reason)}`)
+            })
+        }
 
         this.started = (async() => {
             Log.info(`Using discord.js version: ${version}`);
@@ -98,6 +116,10 @@ export class Bot {
 
         Log.error(`Impossible to connect the bot after ${maxTries} attempts`);
         return false;
+    }
+
+    private static formatError(error: unknown): string {
+        return error instanceof Error ? (error.stack ?? error.message) : String(error)
     }
 
     static setActivity(message: string, type: ActivityType) {

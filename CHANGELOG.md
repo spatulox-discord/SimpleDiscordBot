@@ -1,6 +1,11 @@
 # Changelog
 Date format : dd/mm/yyyy
 
+### Unreleased
+- Add :
+  - `BotConfig.catchUnhandledRejections` (default `false`) : the unhandled promise rejections of the process are logged with `Bot.log.error` instead of crashing it
+  - The client errors (`Events.Error`) are logged with `Bot.log.error` (with the stack trace), an unhandled `error` event no longer crashes the process
+
 ### 14/10/2026 - 5.0.0
 - Breaking :
   - `BotConfig.botName` is removed : the bot name is read from the Discord account (`client.user.displayName`) once the client is ready. Remove `botName` from your config

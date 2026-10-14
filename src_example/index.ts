@@ -12,7 +12,8 @@ async function main() {
             error: {channelId: "YOUR_LOG_CHANNEL_ID", console: true, discord: true},
             warn: {channelId: "YOUR_LOG_CHANNEL_ID", console: true, discord: true},
             debug: {channelId: "YOUR_LOG_CHANNEL_ID", console: true, discord: false},
-        }
+        },
+        catchUnhandledRejections: true, // Log the unhandled promise rejections instead of crashing
     }
 
     const bot = new Bot(client, config);
