@@ -46,8 +46,9 @@ export class BotLog {
         ] as const;
 
         for (const { config, prop } of logTypes) {
-            const channelId = Bot.config.log?.[config]?.channelId;
-            if (!channelId) continue;
+            const logConfig = Bot.config.log?.[config];
+            if (!logConfig?.discord || !logConfig.channelId) continue;
+            const channelId = logConfig.channelId;
 
             try {
                 const channel = await Bot.client.channels.fetch(channelId) as TextChannel;
