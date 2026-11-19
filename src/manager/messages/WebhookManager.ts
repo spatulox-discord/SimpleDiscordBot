@@ -1,10 +1,10 @@
 import {
-    Base64Resolvable, BaseGuildTextChannel,
+    Base64Resolvable, BaseGuildTextChannel, BaseGuildVoiceChannel,
     BufferResolvable,
     Client,
     Message,
     Snowflake,
-    TextChannel, ThreadChannel, ThreadOnlyChannel,
+    ThreadChannel, ThreadOnlyChannel,
     Webhook,
     WebhookMessageCreateOptions
 } from 'discord.js';
@@ -13,6 +13,12 @@ import {readFile} from 'fs/promises';
 import {resolve} from 'path';
 import {Bot} from "../../core/Bot";
 import {EmbedManager} from "./EmbedManager";
+
+/**
+ * Channels a webhook can post in : text and announcement channels, the text chat of voice and stage
+ * channels, and threads (through their parent channel)
+ */
+type WebhookTargetChannel = BaseGuildTextChannel | BaseGuildVoiceChannel | ThreadChannel;
 
 export class WebhookManager {
     /** One webhook per channel id (the parent channel id for threads) */
@@ -45,9 +51,9 @@ export class WebhookManager {
     }
 
     /**
-     * Récupère le channel à partir de l'ID ou utilise directement si TextChannel/ThreadChannel
+     * Fetch the targeted channel, which must be able to receive a webhook message
      */
-    private async getChannel(channelId: Snowflake): Promise<TextChannel | ThreadChannel> {
+    private async getChannel(channelId: Snowflake): Promise<WebhookTargetChannel> {
         const channel = await this.client.channels.fetch(channelId);
 
         if (!channel) {
@@ -55,10 +61,11 @@ export class WebhookManager {
         }
 
         if (
-            !(channel instanceof TextChannel) &&
+            !(channel instanceof BaseGuildTextChannel) &&
+            !(channel instanceof BaseGuildVoiceChannel) &&
             !(channel instanceof ThreadChannel)
         ) {
-            throw new Error(`Channel ${channelId} is not a TextChannel nor a ThreadChannel`);
+            throw new Error(`Channel ${channelId} is not a text, voice or thread channel`);
         }
         return channel;
     }
@@ -66,7 +73,7 @@ export class WebhookManager {
     /**
      * Channel owning the webhook : the parent channel when targeting a thread
      */
-    private getWebhookChannel(channel: TextChannel | ThreadChannel): BaseGuildTextChannel | ThreadOnlyChannel {
+    private getWebhookChannel(channel: WebhookTargetChannel): BaseGuildTextChannel | BaseGuildVoiceChannel | ThreadOnlyChannel {
         if (!(channel instanceof ThreadChannel)) return channel;
 
         const parent = channel.parent;
@@ -80,7 +87,7 @@ export class WebhookManager {
      * Get or create webhook (lazy initialization, cached per channel)
      * Create the webhook in the parent channel if it's in a thread
      */
-    private async getWebhook(channel: TextChannel | ThreadChannel): Promise<Webhook> {
+    private async getWebhook(channel: WebhookTargetChannel): Promise<Webhook> {
         try {
             const textChannel = this.getWebhookChannel(channel);
 

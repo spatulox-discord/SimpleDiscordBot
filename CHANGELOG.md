@@ -1,10 +1,12 @@
 # Changelog
 Date format : dd/mm/yyyy
 
-### Unreleased
+### 19/11/2026 - 5.1.0
 - Add :
   - `BotConfig.catchUnhandledRejections` (default `false`) : the unhandled promise rejections of the process are logged with `Bot.log.error` instead of crashing it
   - The client errors (`Events.Error`) are logged with `Bot.log.error` (with the stack trace), an unhandled `error` event no longer crashes the process
+- Fix :
+  - `WebhookManager` can send in the text chat of voice and stage channels, and in announcement channels : they threw `is not a TextChannel nor a ThreadChannel`
 
 ### 14/10/2026 - 5.0.0
 - Breaking :
